@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | TemanRusiaKamu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-red-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-blue-800 mb-6">Login ke Akun Anda</h2>
+    <form id="login-form" class="space-y-4">
+      <input id="email" type="email" placeholder="Email" required
+        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      <input id="password" type="password" placeholder="Password" required
+        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      <button type="submit"
+        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">
+        Login
+      </button>
+    </form>
+    <p class="text-center text-gray-600 mt-4 text-sm">
+      Belum punya akun?
+      <a href="/signup.html" class="text-blue-600 hover:underline">Daftar di sini</a>
+    </p>
+    <p id="message" class="text-center text-sm mt-3"></p>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://mkflcrvsjamfrfxsprwg.supabase.co'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rZmxjcnZzamFtZnJmeHNwcndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NzY5OTAsImV4cCI6MjA3NTI1Mjk5MH0.gX36BiqZV1Hym46ACh0kfWAv6T2Js4gjB8Kj4pqNFaQ'
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    const form = document.getElementById('login-form')
+    const msg = document.getElementById('message')
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const email = document.getElementById('email').value
+      const password = document.getElementById('password').value
+      msg.textContent = 'Memproses...'
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        msg.textContent = '❌ ' + error.message
+        msg.className = 'text-center text-red-600 text-sm mt-3'
+      } else {
+        msg.textContent = '✅ Login berhasil!'
+        msg.className = 'text-center text-green-600 text-sm mt-3'
+        setTimeout(() => {
+          window.location.href = '/' // arahkan ke halaman utama setelah login
+        }, 1500)
+      }
+    })
+  </script>
+</body>
+</html>
