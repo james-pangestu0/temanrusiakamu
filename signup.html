@@ -9,24 +9,51 @@
 </head>
 <body class="bg-gradient-to-br from-blue-100 to-red-100 min-h-screen flex items-center justify-center">
   <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center text-blue-800 mb-6">Daftar Akun Baru</h2>
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-blue-800 mb-2">Daftar Akun Baru</h2>
+      <p class="text-gray-600 text-sm">Mulai perjalanan belajar bahasa Rusia Anda</p>
+    </div>
+    
     <form id="signup-form" class="space-y-4">
-      <input id="full-name" type="text" placeholder="Nama Lengkap" required
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
-      <input id="email" type="email" placeholder="Email" required
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
-      <input id="password" type="password" placeholder="Password (min. 6 karakter)" required minlength="6"
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+        <input id="full-name" type="text" placeholder="John Doe" required
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+        <input id="email" type="email" placeholder="nama@email.com" required
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
+      </div>
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+        <input id="password" type="password" placeholder="Minimal 6 karakter" required minlength="6"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent" />
+        <p class="text-xs text-gray-500 mt-1">Minimal 6 karakter</p>
+      </div>
+      
       <button type="submit" id="submit-btn"
-        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
-        Daftar Sekarang
+        class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+        <span id="btn-text">Daftar Sekarang</span>
+        <span id="btn-loader" class="hidden">
+          <i class="fas fa-spinner fa-spin mr-2"></i>Memproses...
+        </span>
       </button>
     </form>
-    <p class="text-center text-gray-600 mt-4 text-sm">
-      Sudah punya akun?
-      <a href="login.html" class="text-blue-600 hover:underline">Login di sini</a>
-    </p>
-    <p id="message" class="text-center text-sm mt-3"></p>
+    
+    <div class="mt-6 text-center">
+      <p class="text-gray-600 text-sm">
+        Sudah punya akun?
+        <a href="login.html" class="text-blue-600 hover:underline font-semibold">Login di sini</a>
+      </p>
+    </div>
+    
+    <div id="message" class="text-center text-sm mt-4"></div>
+    
+    <!-- Debug Info -->
+    <div id="debug-info" class="mt-4 p-3 bg-gray-100 rounded text-xs text-gray-600 hidden"></div>
   </div>
 
   <script>
@@ -39,6 +66,15 @@
     const form = document.getElementById('signup-form')
     const msg = document.getElementById('message')
     const submitBtn = document.getElementById('submit-btn')
+    const btnText = document.getElementById('btn-text')
+    const btnLoader = document.getElementById('btn-loader')
+    const debugInfo = document.getElementById('debug-info')
+
+    function showDebug(info) {
+      debugInfo.classList.remove('hidden')
+      debugInfo.innerHTML += info + '<br>'
+      console.log(info)
+    }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault()
@@ -47,52 +83,112 @@
       const email = document.getElementById('email').value.trim()
       const password = document.getElementById('password').value
       
-      // Disable button to prevent double submission
-      submitBtn.disabled = true
+      // Validate
+      if (password.length < 6) {
+        msg.textContent = '❌ Password minimal 6 karakter'
+        msg.className = 'text-center text-red-600 text-sm mt-4'
+        return
+      }
       
-      msg.textContent = '⏳ Memproses pendaftaran...'
-      msg.className = 'text-center text-blue-600 text-sm mt-3 font-medium'
+      // Disable button
+      submitBtn.disabled = true
+      btnText.classList.add('hidden')
+      btnLoader.classList.remove('hidden')
+      msg.textContent = ''
+      debugInfo.innerHTML = ''
+      debugInfo.classList.add('hidden')
 
       try {
-        // Sign up user with metadata
+        showDebug('🔄 Memulai pendaftaran...')
+        showDebug('📧 Email: ' + email)
+        showDebug('👤 Nama: ' + fullName)
+        
+        // Sign up user
         const { data, error } = await supabaseClient.auth.signUp({
           email: email,
           password: password,
           options: {
             data: {
               full_name: fullName
-            }
+            },
+            emailRedirectTo: window.location.origin + '/success.html'
           }
         })
 
-        if (error) throw error
+        showDebug('📦 Response received')
+        
+        if (error) {
+          showDebug('❌ Error: ' + error.message)
+          throw error
+        }
 
-        // Check if user needs to confirm email
-        if (data?.user?.identities?.length === 0) {
+        showDebug('✅ User created!')
+        showDebug('👤 User ID: ' + data.user?.id)
+        showDebug('📧 User Email: ' + data.user?.email)
+        
+        // Check if email already exists
+        if (data.user && data.user.identities && data.user.identities.length === 0) {
+          showDebug('⚠️ Email already registered')
           msg.textContent = '⚠️ Email sudah terdaftar. Silakan login atau gunakan email lain.'
-          msg.className = 'text-center text-orange-600 text-sm mt-3'
+          msg.className = 'text-center text-orange-600 text-sm mt-4 font-semibold'
           submitBtn.disabled = false
+          btnText.classList.remove('hidden')
+          btnLoader.classList.add('hidden')
           return
         }
 
-        msg.textContent = '✅ Pendaftaran berhasil! Mengalihkan...'
-        msg.className = 'text-center text-green-600 text-sm mt-3 font-semibold'
+        // Check if needs email confirmation
+        if (data.user && data.user.confirmation_sent_at && !data.user.confirmed_at) {
+          showDebug('📧 Email confirmation required')
+          msg.textContent = '✅ Pendaftaran berhasil! Silakan cek email untuk verifikasi.'
+          msg.className = 'text-center text-green-600 text-sm mt-4 font-semibold'
+          form.reset()
+          submitBtn.disabled = false
+          btnText.classList.remove('hidden')
+          btnLoader.classList.add('hidden')
+          return
+        }
+
+        // Success - no email confirmation needed
+        showDebug('🎉 Signup complete! Redirecting...')
+        msg.textContent = '✅ Pendaftaran berhasil! Mengalihkan ke halaman login...'
+        msg.className = 'text-center text-green-600 text-sm mt-4 font-semibold'
         
-        // Clear form
         form.reset()
         
-        // Redirect to success page
+        // Redirect to login
         setTimeout(() => {
-          window.location.href = 'success.html'
-        }, 1500)
+          window.location.href = 'login.html'
+        }, 2000)
 
       } catch (error) {
         console.error('Signup error:', error)
-        msg.textContent = '❌ Error: ' + error.message
-        msg.className = 'text-center text-red-600 text-sm mt-3'
+        showDebug('💥 Exception: ' + error.message)
+        
+        let errorMessage = '❌ Pendaftaran gagal: '
+        
+        if (error.message.includes('already registered') || error.message.includes('already exists')) {
+          errorMessage += 'Email sudah terdaftar. Silakan login.'
+        } else if (error.message.includes('Invalid email')) {
+          errorMessage += 'Format email tidak valid.'
+        } else if (error.message.includes('Password')) {
+          errorMessage += 'Password terlalu lemah. Minimal 6 karakter.'
+        } else if (error.message.includes('violates row-level security')) {
+          errorMessage += 'Terjadi kesalahan database. Hubungi admin.'
+        } else {
+          errorMessage += error.message
+        }
+        
+        msg.textContent = errorMessage
+        msg.className = 'text-center text-red-600 text-sm mt-4 font-medium'
+        
         submitBtn.disabled = false
+        btnText.classList.remove('hidden')
+        btnLoader.classList.add('hidden')
       }
     })
   </script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </body>
 </html>
