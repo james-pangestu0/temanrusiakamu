@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | TemanRusiaKamu</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-100 to-red-100 min-h-screen flex items-center justify-center">
   <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
@@ -20,39 +19,49 @@
         Login
       </button>
     </form>
-    <p class="text-center text-gray-600 mt-4 text-sm">
-      Belum punya akun?
-      <a href="/signup.html" class="text-blue-600 hover:underline">Daftar di sini</a>
-    </p>
     <p id="message" class="text-center text-sm mt-3"></p>
   </div>
 
-  <script>
-    const SUPABASE_URL = 'https://mkflcrvsjamfrfxsprwg.supabase.co'
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rZmxjcnZzamFtZnJmeHNwcndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NzY5OTAsImV4cCI6MjA3NTI1Mjk5MH0.gX36BiqZV1Hym46ACh0kfWAv6T2Js4gjB8Kj4pqNFaQ'
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  <!-- Perhatikan: gunakan type="module" -->
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    const form = document.getElementById('login-form')
-    const msg = document.getElementById('message')
+    // 🔹 Ganti dua baris ini dengan data asli dari Supabase
+    const SUPABASE_URL = "https://your-project.supabase.co";
+    const SUPABASE_ANON_KEY = "your-anon-key";
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      const email = document.getElementById('email').value
-      const password = document.getElementById('password').value
-      msg.textContent = 'Memproses...'
+    // 🔹 Buat client Supabase (variabel 'supabase' didefinisikan di sini)
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    const form = document.getElementById("login-form");
+    const msg = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.textContent = "Memproses...";
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      // 🔹 Coba login
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
       if (error) {
-        msg.textContent = '❌ ' + error.message
-        msg.className = 'text-center text-red-600 text-sm mt-3'
+        msg.textContent = "❌ " + error.message;
+        msg.className = "text-center text-red-600 text-sm mt-3";
       } else {
-        msg.textContent = '✅ Login berhasil!'
-        msg.className = 'text-center text-green-600 text-sm mt-3'
+        msg.textContent = "✅ Login berhasil!";
+        msg.className = "text-center text-green-600 text-sm mt-3";
+
+        // Opsional: redirect ke halaman utama
         setTimeout(() => {
-          window.location.href = '/' // arahkan ke halaman utama setelah login
-        }, 1500)
+          window.location.href = "/";
+        }, 1500);
       }
-    })
+    });
   </script>
 </body>
 </html>
