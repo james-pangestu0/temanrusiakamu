@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TemanRusiaKamu | Belajar Bahasa Rusia Bersama Native Speaker</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
@@ -127,6 +128,62 @@
       backdrop-filter: blur(10px);
       background: rgba(255, 255, 255, 0.95);
     }
+
+    /* User Dropdown Styles */
+    .user-dropdown {
+      position: relative;
+    }
+
+    .user-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 10px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      min-width: 220px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .user-menu.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e3a8a, #dc2626);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .user-avatar:hover {
+      transform: scale(1.05);
+    }
+
+    .online-indicator {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 12px;
+      height: 12px;
+      background: #10b981;
+      border: 2px solid white;
+      border-radius: 50%;
+    }
   </style>
 </head>
 
@@ -158,10 +215,52 @@
           <li><a href="#kontak" class="text-gray-700 hover:text-blue-700 transition">Kontak</a></li>
         </ul>
         
-        <!-- Auth Buttons -->
+        <!-- Auth Buttons / User Menu -->
         <div class="hidden md:flex items-center space-x-4">
-          <a href="login.html" class="px-5 py-2 text-blue-700 hover:text-blue-900 font-semibold transition">Login</a>
-          <a href="signup.html" class="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 font-semibold transition shadow-md">Daftar</a>
+          <!-- Guest View -->
+          <div id="guest-nav" class="flex items-center space-x-4">
+            <a href="login.html" class="px-5 py-2 text-blue-700 hover:text-blue-900 font-semibold transition">Login</a>
+            <a href="signup.html" class="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 font-semibold transition shadow-md">Daftar</a>
+          </div>
+
+          <!-- User Logged In View -->
+          <div id="user-nav" class="hidden items-center space-x-4">
+            <span id="user-greeting" class="text-gray-700 font-medium"></span>
+            <div class="user-dropdown">
+              <div class="relative">
+                <div id="user-avatar" class="user-avatar">
+                  <i class="fas fa-user"></i>
+                  <div class="online-indicator"></div>
+                </div>
+              </div>
+              <div id="user-menu" class="user-menu">
+                <div class="p-4 border-b border-gray-100">
+                  <p id="user-menu-name" class="font-semibold text-gray-800"></p>
+                  <p id="user-menu-email" class="text-sm text-gray-500"></p>
+                </div>
+                <div class="py-2">
+                  <a href="profile.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition">
+                    <i class="fas fa-user-circle mr-3 text-blue-600"></i>
+                    Lihat Profil
+                  </a>
+                  <a href="edit-profile.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition">
+                    <i class="fas fa-edit mr-3 text-green-600"></i>
+                    Edit Profil
+                  </a>
+                  <a href="my-courses.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 transition">
+                    <i class="fas fa-book-reader mr-3 text-purple-600"></i>
+                    Kursus Saya
+                  </a>
+                </div>
+                <div class="border-t border-gray-100 py-2">
+                  <button id="logout-btn" class="flex items-center w-full px-4 py-2 text-red-600 hover:bg-red-50 transition">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         
         <!-- Mobile Menu Button -->
@@ -179,9 +278,28 @@
         <li><a href="#paket" class="block text-gray-700 hover:text-blue-700">Paket Kursus</a></li>
         <li><a href="#testimoni" class="block text-gray-700 hover:text-blue-700">Testimoni</a></li>
         <li><a href="#kontak" class="block text-gray-700 hover:text-blue-700">Kontak</a></li>
-        <li class="pt-3 border-t">
+        
+        <!-- Mobile Auth/User -->
+        <li id="mobile-guest-nav" class="pt-3 border-t">
           <a href="login.html" class="block text-blue-700 font-semibold mb-2">Login</a>
           <a href="signup.html" class="block text-center px-6 py-2 bg-red-600 text-white rounded-full">Daftar</a>
+        </li>
+        
+        <li id="mobile-user-nav" class="hidden pt-3 border-t space-y-2">
+          <p id="mobile-user-name" class="font-semibold text-gray-800"></p>
+          <p id="mobile-user-email" class="text-sm text-gray-500 mb-3"></p>
+          <a href="profile.html" class="block py-2 text-gray-700">
+            <i class="fas fa-user-circle mr-2"></i>Lihat Profil
+          </a>
+          <a href="edit-profile.html" class="block py-2 text-gray-700">
+            <i class="fas fa-edit mr-2"></i>Edit Profil
+          </a>
+          <a href="my-courses.html" class="block py-2 text-gray-700">
+            <i class="fas fa-book-reader mr-2"></i>Kursus Saya
+          </a>
+          <button id="mobile-logout-btn" class="block w-full text-left py-2 text-red-600">
+            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+          </button>
         </li>
       </ul>
     </div>
@@ -356,7 +474,8 @@
             </div>
             
             <div class="flex flex-col sm:flex-row gap-4">
-              <a href="signup.html" class="flex-1 text-center px-8 py-4 bg-gradient-to-r from-blue-700 to-red-600 text-white rounded-full font-bold text-lg hover:shadow-xl transition transform hover:scale-105">
+              <!-- Button berubah berdasarkan status login -->
+              <a id="course-cta-btn" href="signup.html" class="flex-1 text-center px-8 py-4 bg-gradient-to-r from-blue-700 to-red-600 text-white rounded-full font-bold text-lg hover:shadow-xl transition transform hover:scale-105">
                 Daftar Sekarang
               </a>
               <a href="https://wa.me/62895410191574" target="_blank" class="flex-1 text-center px-8 py-4 bg-green-500 text-white rounded-full font-bold text-lg hover:bg-green-600 transition">
@@ -421,77 +540,4 @@
     </div>
   </section>
 
-  <!-- Kontak Section -->
-  <section id="kontak" class="py-20 gradient-bg text-white">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-4">Hubungi Kami</h2>
-        <p class="text-xl text-gray-100">Kami siap membantu perjalanan belajar Anda</p>
-      </div>
-      
-      <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <!-- WhatsApp -->
-        <a href="https://wa.me/62895410191574" target="_blank" class="bg-white/10 backdrop-blur rounded-2xl p-8 text-center hover:bg-white/20 transition border border-white/20 card-hover">
-          <div class="text-5xl mb-4">
-            <i class="fab fa-whatsapp text-green-400"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-2">WhatsApp</h3>
-          <p class="text-gray-200 mb-2">Chat dengan kami</p>
-          <p class="font-semibold">+62 895-4101-91574</p>
-        </a>
-        
-        <!-- Instagram -->
-        <a href="https://www.instagram.com/temanrusiakamu" target="_blank" class="bg-white/10 backdrop-blur rounded-2xl p-8 text-center hover:bg-white/20 transition border border-white/20 card-hover">
-          <div class="text-5xl mb-4">
-            <i class="fab fa-instagram text-pink-400"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-2">Instagram</h3>
-          <p class="text-gray-200 mb-2">Follow kami</p>
-          <p class="font-semibold">@temanrusiakamu</p>
-        </a>
-        
-        <!-- TikTok -->
-        <a href="https://www.tiktok.com/@james.pangestu" target="_blank" class="bg-white/10 backdrop-blur rounded-2xl p-8 text-center hover:bg-white/20 transition border border-white/20 card-hover">
-          <div class="text-5xl mb-4">
-            <i class="fab fa-tiktok"></i>
-          </div>
-          <h3 class="text-xl font-bold mb-2">TikTok</h3>
-          <p class="text-gray-200 mb-2">Konten seru kami</p>
-          <p class="font-semibold">@james.pangestu</p>
-        </a>
-      </div>
-      
-      <div class="text-center mt-12">
-        <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur px-6 py-3 rounded-full border border-white/20">
-          <i class="fas fa-globe text-xl"></i>
-          <span class="font-semibold text-lg">temanrusiakamu.com</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="py-20 bg-white">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-      <h2 class="text-4xl font-bold text-gray-800 mb-6">Siap Memulai Perjalanan Belajar Anda?</h2>
-      <p class="text-xl text-gray-600 mb-8">Bergabunglah dengan ratusan siswa yang sudah merasakan metode pembelajaran kami</p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="signup.html" class="px-10 py-4 bg-gradient-to-r from-blue-700 to-red-600 text-white rounded-full font-bold text-lg hover:shadow-xl transition transform hover:scale-105">
-          Daftar Sekarang
-        </a>
-        <a href="https://wa.me/62895410191574" target="_blank" class="px-10 py-4 bg-green-500 text-white rounded-full font-bold text-lg hover:bg-green-600 transition">
-          <i class="fab fa-whatsapp mr-2"></i>Konsultasi Gratis
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-gray-300 py-12">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="grid md:grid-cols-4 gap-8 mb-8">
-        <div class="md:col-span-2">
-          <div class="text-2xl font-bold mb-4">
-            <span class="text-white">Teman</span><span class="text-red-500">Rusia</span><span class="text-white">Kamu</span>
-          </div>
-          <p class="text-gray-400 mb-4">Platform
+  <!--
