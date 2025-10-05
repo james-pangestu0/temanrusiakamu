@@ -7,50 +7,86 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-100 to-red-100 min-h-screen flex items-center justify-center">
+
   <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center text-blue-800 mb-6">Daftar Akun Baru</h2>
+    <h2 class="text-2xl font-bold text-center text-blue-800 mb-6">
+      Buat Akun Baru
+    </h2>
+
     <form id="signup-form" class="space-y-4">
       <input id="email" type="email" placeholder="Email" required
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" />
       <input id="password" type="password" placeholder="Password" required
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" />
       <button type="submit"
-        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">
+        class="w-full bg-red-500 text-white font-semibold py-2 rounded-lg hover:bg-red-600 transition">
         Daftar Sekarang
       </button>
     </form>
-    <p class="text-center text-gray-600 mt-4 text-sm">
-      Sudah punya akun?
-      <a href="/login.html" class="text-blue-600 hover:underline">Login di sini</a>
-    </p>
-    <p id="message" class="text-center text-sm mt-3"></p>
+
+    <p id="message" class="text-center text-sm mt-4"></p>
   </div>
 
   <script type="module">
-    const SUPABASE_URL = 'https://mkflcrvsjamfrfxsprwg.supabase.co'
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rZmxjcnZzamFtZnJmeHNwcndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NzY5OTAsImV4cCI6MjA3NTI1Mjk5MH0.gX36BiqZV1Hym46ACh0kfWAv6T2Js4gjB8Kj4pqNFaQ'
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    const form = document.getElementById('signup-form')
-    const msg = document.getElementById('message')
+    // 🔹 Ganti dengan milikmu
+    const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      const email = document.getElementById('email').value
-      const password = document.getElementById('password').value
-      msg.textContent = 'Memproses...'
+    const form = document.getElementById("signup-form");
+    const msg = document.getElementById("message");
 
-      const { data, error } = await supabase.auth.signUp({ email, password })
-      if (error) {
-        msg.textContent = '❌ ' + error.message
-        msg.className = 'text-center text-red-600 text-sm mt-3'
-      } else {
-        msg.textContent = '✅ Berhasil daftar! Silakan cek email untuk verifikasi.'
-        msg.className = 'text-center text-green-600 text-sm mt-3'
-        form.reset()
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.textContent = "🔄 Memproses pendaftaran...";
+      msg.className = "text-center text-blue-600 text-sm mt-4";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      try {
+        // 🔍 1️⃣ Cek apakah email sudah ada
+        const { data: existingUser, error: checkError } = await supabase
+          .from("profiles")
+          .select("email")
+          .eq("email", email)
+          .maybeSingle();
+
+        if (checkError) throw checkError;
+
+        if (existingUser) {
+          msg.textContent = "⚠️ Email sudah terdaftar. Silakan login.";
+          msg.className = "text-center text-yellow-600 text-sm mt-4";
+          return;
+        }
+
+        // 🧩 2️⃣ Daftarkan akun di Supabase Auth
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+
+        // 💾 3️⃣ Simpan ke database profiles
+        const { error: insertError } = await supabase
+          .from("profiles")
+          .insert([{ email }]);
+        if (insertError) throw insertError;
+
+        // 🎉 4️⃣ Pesan sukses
+        msg.textContent = "✅ Akun berhasil dibuat! Mengarahkan ke halaman login...";
+        msg.className = "text-center text-green-600 text-sm mt-4";
+
+        // ⏳ Tunggu sebentar lalu redirect
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+
+      } catch (err) {
+        msg.textContent = "❌ " + err.message;
+        msg.className = "text-center text-red-600 text-sm mt-4";
       }
-    })
+    });
   </script>
+
 </body>
 </html>
-
