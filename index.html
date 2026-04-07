@@ -184,6 +184,23 @@
       border: 2px solid white;
       border-radius: 50%;
     }
+
+    .hero-tutor-wrapper {
+      position: relative;
+      min-height: 560px;
+    }
+
+    .hero-tutor-image {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: min(96%, 520px);
+      max-height: 600px;
+      object-fit: contain;
+      object-position: bottom right;
+      image-rendering: auto;
+      filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.25));
+    }
   </style>
 </head>
 
@@ -343,8 +360,12 @@
           </div>
         </div>
         
-        <div class="hidden md:block">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 600'%3E%3Crect fill='%23fff' opacity='0.1' width='500' height='600' rx='30'/%3E%3Ctext x='250' y='300' font-family='Arial' font-size='200' fill='%23fff' opacity='0.3' text-anchor='middle'%3E🎓%3C/text%3E%3C/svg%3E" alt="Hero Image" class="w-full">
+        <div class="hidden md:block hero-tutor-wrapper">
+          <img
+            src="file:///C:/Users/james/.cursor/projects/d-temanrusiakamu/assets/c__Users_james_AppData_Roaming_Cursor_User_workspaceStorage_empty-window_images_pp-removebg-preview-a87b9346-a2f2-49cf-9d6c-55961cbbac36.png"
+            alt="Tutor TemanRusiaKamu"
+            class="hero-tutor-image"
+          >
         </div>
       </div>
     </div>
@@ -394,7 +415,7 @@
         <p class="text-xl text-gray-600">Investasi terbaik untuk masa depan Anda</p>
       </div>
       
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
         <div class="pricing-card bg-white rounded-3xl shadow-2xl overflow-hidden">
           <div class="bg-gradient-to-r from-blue-900 to-red-600 text-white text-center py-8 px-6">
             <div class="inline-block bg-yellow-400 text-gray-900 px-4 py-2 rounded-full text-sm font-bold mb-4">
@@ -477,6 +498,99 @@
               <!-- Button berubah berdasarkan status login -->
               <a id="course-cta-btn" href="signup.html" class="flex-1 text-center px-8 py-4 bg-gradient-to-r from-blue-700 to-red-600 text-white rounded-full font-bold text-lg hover:shadow-xl transition transform hover:scale-105">
                 Daftar Sekarang
+              </a>
+              <a href="https://wa.me/62895410191574" target="_blank" class="flex-1 text-center px-8 py-4 bg-green-500 text-white rounded-full font-bold text-lg hover:bg-green-600 transition">
+                <i class="fab fa-whatsapp mr-2"></i>Tanya Admin
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="pricing-card bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div class="bg-gradient-to-r from-red-600 to-blue-900 text-white text-center py-8 px-6">
+            <div class="inline-block bg-yellow-400 text-gray-900 px-4 py-2 rounded-full text-sm font-bold mb-4">
+              ⭐ LES PRIVATE
+            </div>
+            <h3 class="text-3xl font-bold mb-2">Les Private</h3>
+            <p class="text-blue-100">Belajar intensif 1 on 1 bersama tutor</p>
+          </div>
+          
+          <div class="p-8 md:p-12">
+            <div class="text-center mb-8">
+              <div class="text-gray-600 mb-2">Biaya Pendaftaran</div>
+              <div class="text-4xl font-bold text-gray-800 mb-4">
+                Rp 250.000
+                <span class="text-lg font-normal text-gray-500">(sekali bayar)</span>
+              </div>
+              
+              <div class="text-gray-600 mb-2 mt-6">Biaya Kursus</div>
+              <div class="text-5xl font-bold text-blue-700 mb-2">
+                Rp 1.200.000
+                <span class="text-2xl font-normal text-gray-500">/bulan</span>
+              </div>
+            </div>
+            
+            <div class="space-y-4 mb-8">
+              <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+                <div>
+                  <span class="font-semibold text-gray-800">Direct 1 on 1 Class with Tutor</span>
+                  <p class="text-gray-600 text-sm">Fokus penuh untuk kebutuhan belajar Anda</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+                <div>
+                  <span class="font-semibold text-gray-800">Intensive Learning</span>
+                  <p class="text-gray-600 text-sm">Pendampingan lebih intens untuk progres cepat</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+                <div>
+                  <span class="font-semibold text-gray-800">8x Pertemuan per Bulan</span>
+                  <p class="text-gray-600 text-sm">Jadwal fleksibel dengan pembelajaran terstruktur</p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+                <div>
+                  <span class="font-semibold text-gray-800">45 Menit per Sesi</span>
+                  <p class="text-gray-600 text-sm">Durasi ideal agar fokus belajar tetap maksimal</p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+                <div>
+                  <span class="font-semibold text-gray-800">Free Konsultasi</span>
+                  <p class="text-gray-600 text-sm">Bimbingan tambahan di luar sesi kelas utama</p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+                <div>
+                  <span class="font-semibold text-gray-800">Tutor Native Speaker</span>
+                  <p class="text-gray-600 text-sm">Langsung dibimbing oleh Kak James</p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+                <div>
+                  <span class="font-semibold text-gray-800">Materi Lengkap + Free E-Book Premium</span>
+                  <p class="text-gray-600 text-sm">Termasuk seluruh benefit dari kelas reguler</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a href="signup.html" class="flex-1 text-center px-8 py-4 bg-gradient-to-r from-blue-700 to-red-600 text-white rounded-full font-bold text-lg hover:shadow-xl transition transform hover:scale-105">
+                Daftar Les Private
               </a>
               <a href="https://wa.me/62895410191574" target="_blank" class="flex-1 text-center px-8 py-4 bg-green-500 text-white rounded-full font-bold text-lg hover:bg-green-600 transition">
                 <i class="fab fa-whatsapp mr-2"></i>Tanya Admin
