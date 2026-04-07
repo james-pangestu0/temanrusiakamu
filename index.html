@@ -241,10 +241,10 @@
 
     .tutor-float-widget {
       position: fixed;
-      right: 20px;
-      bottom: 26px;
-      width: min(30vw, 150px);
-      height: min(34vh, 210px);
+      right: 0;
+      bottom: 0;
+      width: min(38vw, 190px);
+      height: min(38vh, 240px);
       z-index: 900;
       pointer-events: none;
       animation: tutorFloat 3.8s ease-in-out infinite;
@@ -267,19 +267,19 @@
 
     @media (min-width: 768px) {
       .tutor-float-widget {
-        right: 26px;
-        bottom: 30px;
-        width: min(16vw, 200px);
-        height: min(40vh, 290px);
+        right: 0;
+        bottom: 0;
+        width: min(24vw, 320px);
+        height: min(60vh, 430px);
       }
     }
 
     @media (max-width: 420px) {
       .tutor-float-widget {
-        right: 12px;
-        bottom: 20px;
-        width: min(52vw, 230px);
-        height: min(52vh, 300px);
+        right: 0;
+        bottom: 0;
+        width: min(56vw, 250px);
+        height: min(56vh, 320px);
       }
     }
   </style>
@@ -311,6 +311,7 @@
           <li><a href="#paket" class="text-gray-700 hover:text-blue-700 transition">Paket Kursus</a></li>
           <li><a href="#testimoni" class="text-gray-700 hover:text-blue-700 transition">Testimoni</a></li>
           <li><a href="#kontak" class="text-gray-700 hover:text-blue-700 transition">Kontak</a></li>
+          <li><a id="membership-link" href="login.html" class="text-gray-700 hover:text-blue-700 transition font-semibold">Membership Area</a></li>
         </ul>
         
         <!-- Auth Buttons / User Menu -->
@@ -376,6 +377,7 @@
         <li><a href="#paket" class="block text-gray-700 hover:text-blue-700">Paket Kursus</a></li>
         <li><a href="#testimoni" class="block text-gray-700 hover:text-blue-700">Testimoni</a></li>
         <li><a href="#kontak" class="block text-gray-700 hover:text-blue-700">Kontak</a></li>
+        <li><a id="mobile-membership-link" href="login.html" class="block text-blue-700 font-semibold hover:text-blue-800">Membership Area</a></li>
         
         <!-- Mobile Auth/User -->
         <li id="mobile-guest-nav" class="pt-3 border-t">
@@ -694,7 +696,6 @@
             <div class="testimony-slide"><img src="assets/testimoni-1.jpeg" alt="Testimoni siswa 1" class="testimony-image"></div>
             <div class="testimony-slide"><img src="assets/testimoni-2.jpeg" alt="Testimoni siswa 2" class="testimony-image"></div>
             <div class="testimony-slide"><img src="assets/testimoni-3.jpeg" alt="Testimoni siswa 3" class="testimony-image"></div>
-            <div class="testimony-slide"><img src="assets/testimoni-4.jpeg" alt="Testimoni siswa 4" class="testimony-image"></div>
             <div class="testimony-slide"><img src="assets/testimoni-5.jpeg" alt="Testimoni siswa 5" class="testimony-image"></div>
             <div class="testimony-slide"><img src="assets/testimoni-6.jpeg" alt="Testimoni siswa 6" class="testimony-image"></div>
             <div class="testimony-slide"><img src="assets/testimoni-7.jpeg" alt="Testimoni siswa 7" class="testimony-image"></div>
@@ -720,10 +721,6 @@
       <a href="https://wa.me/62895410191574" target="_blank" class="inline-block px-8 py-4 bg-green-500 text-white rounded-full font-bold hover:bg-green-600 transition">
         <i class="fab fa-whatsapp mr-2"></i>Chat WhatsApp
       </a>
-      <p class="mt-4 text-sm text-gray-400">
-        Admin monitor:
-        <a href="admin-users.html" class="text-blue-300 hover:underline">Lihat data pendaftar</a>
-      </p>
     </div>
   </section>
 
@@ -733,6 +730,22 @@
     </div>
   </footer>
   <script>
+    (function () {
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (!mobileMenuBtn || !mobileMenu) return;
+
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+
+      mobileMenu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+        });
+      });
+    })();
+
     (function () {
       const track = document.getElementById('testimony-track');
       const slider = document.getElementById('testimony-slider');
@@ -783,6 +796,26 @@
       goTo(0);
       start();
     })();
+  </script>
+  <script type="module">
+    import { auth } from "./firebase-config.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+    const membershipLink = document.getElementById("membership-link");
+    const mobileMembershipLink = document.getElementById("mobile-membership-link");
+
+    const setMembershipDestination = (href) => {
+      if (membershipLink) membershipLink.href = href;
+      if (mobileMembershipLink) mobileMembershipLink.href = href;
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setMembershipDestination("my-courses.html");
+      } else {
+        setMembershipDestination("login.html");
+      }
+    });
   </script>
 </body>
 </html>
