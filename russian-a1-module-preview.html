@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview | Russian A1 Interactive Module</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <header class="bg-white shadow-sm border-b">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-bold text-gray-900">Russian A1 Interactive Module (15 Chapters)</h1>
+        <p class="text-sm text-gray-500">Mode preview untuk cek materi lengkap tanpa login.</p>
+      </div>
+      <a href="index.html" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">Beranda</a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <section class="bg-white rounded-2xl shadow p-6 mb-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div>
+          <p id="chapter-meta" class="text-sm font-semibold text-blue-700"></p>
+          <h2 id="chapter-title" class="text-2xl font-bold text-gray-900"></h2>
+          <p id="chapter-goal" class="text-gray-600 mt-1"></p>
+          <p id="page-meta" class="text-sm text-indigo-600 font-semibold mt-1"></p>
+        </div>
+        <div class="w-full md:w-80">
+          <p class="text-sm text-gray-600 mb-1">Progress belajar</p>
+          <div class="w-full bg-gray-200 rounded-full h-3">
+            <div id="progress-bar" class="h-3 rounded-full bg-blue-600" style="width: 0%"></div>
+          </div>
+          <p id="progress-label" class="text-xs text-gray-600 mt-1"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl shadow p-6 mb-4">
+      <img id="chapter-image" src="" alt="Ilustrasi chapter" class="w-full h-64 object-cover rounded-xl border border-gray-200">
+      <p id="image-caption" class="text-sm text-gray-500 mt-2"></p>
+      <div class="mt-3 flex items-center justify-between gap-2">
+        <button id="prev-page-btn" class="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm">Previous Page</button>
+        <button id="next-page-btn" class="px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 text-sm">Next Page</button>
+      </div>
+    </section>
+
+    <section id="quiz-section" class="bg-white rounded-2xl shadow p-6 mb-4">
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Bahan Ajar Detail</h3>
+      <ul id="teaching-points" class="list-disc pl-6 space-y-2 text-gray-700"></ul>
+      <h4 class="text-base font-semibold text-gray-900 mt-5 mb-2">Frasa Penutur Asli (Native Use)</h4>
+      <div id="native-lines" class="space-y-2"></div>
+      <h4 class="text-base font-semibold text-gray-900 mt-5 mb-2">Dialog Praktik</h4>
+      <div id="dialogue" class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 text-gray-700"></div>
+      <h4 class="text-base font-semibold text-gray-900 mt-5 mb-2">Grammar Focus</h4>
+      <ul id="grammar-list" class="list-disc pl-6 space-y-2 text-gray-700"></ul>
+      <h4 class="text-base font-semibold text-gray-900 mt-5 mb-2">Kosakata Inti</h4>
+      <ul id="vocab-list" class="list-disc pl-6 space-y-2 text-gray-700"></ul>
+    </section>
+
+    <section class="bg-white rounded-2xl shadow p-6 mb-4">
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">Quiz Akhir Chapter</h3>
+      <p id="quiz-question" class="font-medium text-gray-800 mb-3"></p>
+      <div id="quiz-options" class="space-y-2"></div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button id="check-answer-btn" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Cek Jawaban</button>
+        <button id="mark-complete-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Tandai Chapter Selesai</button>
+      </div>
+      <p id="quiz-feedback" class="text-sm mt-3"></p>
+    </section>
+
+    <section class="bg-white rounded-2xl shadow p-4 flex items-center justify-between gap-3">
+      <button id="prev-btn" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">Previous Chapter</button>
+      <button id="next-btn" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Next Chapter</button>
+    </section>
+  </main>
+
+  <script>
+    const chapters = [
+      {
+        title: "Cyrillic Alphabet dan Bunyi Dasar",
+        goal: "Mengenali huruf Kiril, bunyi utama, dan pola tekanan kata.",
+        image: "https://placehold.co/1200x500/1e3a8a/ffffff?text=Chapter+1+-+Cyrillic+Alphabet",
+        caption: "Latihan membaca huruf Kiril adalah fondasi A1.",
+        teachingPoints: [
+          "Pelajari 33 huruf Kiril dan kelompokkan: mirip Latin, bunyi baru, dan huruf jebakan.",
+          "Fokus pada bunyi khas: ы, ж, ш, щ, ц, ч, ю, я.",
+          "Latihan baca suku kata: ма-мо-му, па-по-пу, ва-во-ву.",
+          "Stress (tekanan) mengubah bunyi vokal, contoh: молоко (ma-la-KO)."
+        ],
+        nativeLines: [
+          "В русском языке ударение очень важно. (Dalam bahasa Rusia, tekanan kata sangat penting.)",
+          "Повторяйте вслух медленно, потом быстрее. (Ulangi keras-keras pelan, lalu lebih cepat.)"
+        ],
+        dialogue: ["A: Как читается эта буква?","B: Это буква 'Ж', читается как 'zh'."],
+        grammar: ["Belum fokus kasus; tahap ini fokus fonetik dan literasi dasar."],
+        vocab: ["Привет - Halo", "Спасибо - Terima kasih", "Пока - Sampai jumpa"],
+        quiz: { q: "Huruf mana yang berbunyi 'ya'?", options: ["Ю", "Я", "Е", "Й"], answer: 1, explain: "Я dibaca 'ya'." }
+      },
+      {
+        title: "Sapaan dan Etika Dasar Komunikasi",
+        goal: "Menggunakan salam formal/informal dan ungkapan sopan harian.",
+        image: "https://placehold.co/1200x500/dc2626/ffffff?text=Chapter+2+-+Greetings",
+        caption: "Komunikasi awal harus natural dan sopan.",
+        teachingPoints: [
+          "Bedakan formal dan informal: Здравствуйте vs Привет.",
+          "Gunakan tolong/permisi: Пожалуйста, Извините.",
+          "Latih intonasi ramah saat bertanya."
+        ],
+        nativeLines: [
+          "Здравствуйте, очень приятно познакомиться. (Senang berkenalan.)",
+          "Извините, можно спросить? (Permisi, boleh bertanya?)"
+        ],
+        dialogue: ["A: Здравствуйте!","B: Здравствуйте! Как дела?","A: Хорошо, спасибо."],
+        grammar: ["Kalimat sapaan sederhana tanpa struktur kompleks."],
+        vocab: ["Доброе утро - Selamat pagi", "Добрый вечер - Selamat malam", "Пожалуйста - Silakan"],
+        quiz: { q: "Sapaan formal yang benar adalah...", options: ["Пока", "Привет", "Здравствуйте", "Да"], answer: 2, explain: "Untuk formal gunakan Здравствуйте." }
+      },
+      {
+        title: "Perkenalan Diri dan Asal",
+        goal: "Memperkenalkan nama, negara asal, dan bahasa yang dikuasai.",
+        image: "https://placehold.co/1200x500/0f766e/ffffff?text=Chapter+3+-+Self+Introduction",
+        caption: "A1 harus bisa memperkenalkan diri dengan percaya diri.",
+        teachingPoints: [
+          "Pola inti: Меня зовут..., Я из..., Я говорю по-...",
+          "Latihan 30 detik self-introduction.",
+          "Latihan tanya balik untuk percakapan dua arah."
+        ],
+        nativeLines: [
+          "Меня зовут Анди, я из Индонезии. (Nama saya Andi, saya dari Indonesia.)",
+          "Я немного говорю по-русски. (Saya bisa sedikit bahasa Rusia.)"
+        ],
+        dialogue: ["A: Как вас зовут?","B: Меня зовут Алина. А вас?","A: Я Буди."],
+        grammar: ["Kata ganti orang: я, ты, вы, он, она, мы, они."],
+        vocab: ["Студент - Siswa", "Учитель - Guru", "Я из... - Saya dari..."],
+        quiz: { q: "Terjemahan 'Nama saya Dimas' adalah...", options: ["Я Димас.", "Меня зовут Димас.", "Я из Димас.", "Димас меня."], answer: 1, explain: "Pola standar adalah Меня зовут..." }
+      },
+      {
+        title: "Angka 0-100 dan Umur",
+        goal: "Menggunakan angka, menanyakan umur, dan memberi informasi numerik sederhana.",
+        image: "https://placehold.co/1200x500/7c3aed/ffffff?text=Chapter+4+-+Numbers+and+Age",
+        caption: "Angka adalah core skill untuk transaksi dan identitas.",
+        teachingPoints: [
+          "Kuasai angka 1-20, lalu puluhan: 30, 40, 50, dst.",
+          "Pola umur: Мне ... лет.",
+          "Latihan sebut nomor telepon perlahan."
+        ],
+        nativeLines: [
+          "Мне двадцать два года. (Saya berusia 22 tahun.)",
+          "Сколько вам лет? (Umur Anda berapa?)"
+        ],
+        dialogue: ["A: Сколько вам лет?","B: Мне двадцать пять лет."],
+        grammar: ["Dative dasar pada pola мне ... лет."],
+        vocab: ["Один - Satu", "Десять - Sepuluh", "Сто - Seratus"],
+        quiz: { q: "Angka 15 dalam bahasa Rusia adalah...", options: ["Пятнадцать", "Пятьдесят", "Пятый", "Пятка"], answer: 0, explain: "15 = Пятнадцать." }
+      },
+      {
+        title: "Hari, Tanggal, dan Waktu",
+        goal: "Menyebut hari, jam, dan jadwal kegiatan sehari-hari.",
+        image: "https://placehold.co/1200x500/ea580c/ffffff?text=Chapter+5+-+Time+and+Schedule",
+        caption: "Kemampuan A1 penting untuk bikin janji.",
+        teachingPoints: [
+          "Hari: понедельник sampai воскресенье.",
+          "Jam dasar: час, два часа, три часа.",
+          "Pola membuat janji: Встретимся в ... часов."
+        ],
+        nativeLines: [
+          "Сегодня вторник. (Hari ini Selasa.)",
+          "Урок начинается в девять часов. (Pelajaran dimulai jam sembilan.)"
+        ],
+        dialogue: ["A: Когда урок?","B: В среду в десять часов."],
+        grammar: ["Preposisi в + jam/waktu sederhana."],
+        vocab: ["Сегодня - Hari ini", "Завтра - Besok", "Вчера - Kemarin"],
+        quiz: { q: "Kalimat yang benar untuk 'Kelas mulai jam 8' adalah...", options: ["Урок в восемь.", "Урок начинается в восемь часов.", "Урок есть восемь.", "Начинается урок восемь."], answer: 1, explain: "Struktur paling natural: Урок начинается в ... часов." }
+      },
+      {
+        title: "Kata Kerja Present Tense (Konjugasi Dasar)",
+        goal: "Membentuk kalimat present dengan kata kerja sehari-hari.",
+        image: "https://placehold.co/1200x500/1d4ed8/ffffff?text=Chapter+6+-+Present+Tense+Verbs",
+        caption: "Konjugasi membentuk inti kalimat aktif.",
+        teachingPoints: [
+          "Konjugasi dasar: работать, говорить, жить, учиться.",
+          "Latih pasangan subjek-kata kerja untuk semua pronoun.",
+          "Gunakan contoh kegiatan harian nyata."
+        ],
+        nativeLines: [
+          "Я работаю, ты работаешь, он работает.",
+          "Мы учимся в университете."
+        ],
+        dialogue: ["A: Где ты работаешь?","B: Я работаю в банке."],
+        grammar: ["Akhiran present tense dan variasi conjugation pattern."],
+        vocab: ["Работать - Bekerja", "Учиться - Belajar", "Жить - Tinggal"],
+        quiz: { q: "Bentuk benar untuk 'dia (laki-laki) bekerja' adalah...", options: ["Я работаю", "Ты работаешь", "Он работает", "Мы работаем"], answer: 2, explain: "Он + работает." }
+      },
+      {
+        title: "Negasi dan Pertanyaan Dasar",
+        goal: "Membuat kalimat negatif dan pertanyaan sederhana.",
+        image: "https://placehold.co/1200x500/334155/ffffff?text=Chapter+7+-+Negation+and+Questions",
+        caption: "A1 perlu bisa menolak, mengklarifikasi, dan bertanya.",
+        teachingPoints: [
+          "Negasi utama: не + kata kerja / kata benda.",
+          "Pertanyaan yes/no dengan intonasi naik.",
+          "Kata tanya: кто, что, где, когда, почему."
+        ],
+        nativeLines: [
+          "Я не понимаю. (Saya tidak mengerti.)",
+          "Где вы живёте? (Anda tinggal di mana?)"
+        ],
+        dialogue: ["A: Ты студент?","B: Нет, я не студент. Я учитель."],
+        grammar: ["Posisi partikel не sebelum predikat."],
+        vocab: ["Почему - Kenapa", "Что - Apa", "Где - Di mana"],
+        quiz: { q: "Terjemahan 'Saya tidak bekerja' adalah...", options: ["Я работаю.", "Я не работаю.", "Не я работаю.", "Я работаю не."], answer: 1, explain: "Negasi standar: Я не работаю." }
+      },
+      {
+        title: "Keluarga dan Profesi",
+        goal: "Mendeskripsikan anggota keluarga dan pekerjaan.",
+        image: "https://placehold.co/1200x500/16a34a/ffffff?text=Chapter+8+-+Family+and+Jobs",
+        caption: "Topik paling sering dipakai saat small talk.",
+        teachingPoints: [
+          "Sebut anggota keluarga inti dan relasi.",
+          "Jelaskan profesi dengan kalimat sederhana.",
+          "Gabungkan informasi personal menjadi 4-5 kalimat."
+        ],
+        nativeLines: [
+          "Это моя семья. (Ini keluarga saya.)",
+          "Мой брат инженер, а сестра врач."
+        ],
+        dialogue: ["A: Кто это?","B: Это моя мама. Она врач."],
+        grammar: ["Possessive pronoun: мой, моя, моё, мои."],
+        vocab: ["Семья - Keluarga", "Брат - Saudara laki-laki", "Врач - Dokter"],
+        quiz: { q: "Kalimat benar untuk 'Ini saudara perempuan saya' adalah...", options: ["Это мой сестра.", "Это моя сестра.", "Это сестра мой.", "Это мои сестра."], answer: 1, explain: "Сестра feminin, jadi моя." }
+      },
+      {
+        title: "Gender Noun dan Adjective Agreement",
+        goal: "Menyelaraskan kata sifat dengan gender dan jumlah kata benda.",
+        image: "https://placehold.co/1200x500/be185d/ffffff?text=Chapter+9+-+Gender+Agreement",
+        caption: "Agreement membantu kalimat terdengar natural.",
+        teachingPoints: [
+          "Masculine: -ый/-ой, feminine: -ая, neuter: -ое, plural: -ые.",
+          "Latihan pasangan adjective + noun.",
+          "Gunakan deskripsi orang, benda, tempat."
+        ],
+        nativeLines: [
+          "Большой дом, большая комната, большое окно.",
+          "Русский язык интересный."
+        ],
+        dialogue: ["A: Какая у тебя машина?","B: У меня новая машина."],
+        grammar: ["Agreement nominative antara adjective dan noun."],
+        vocab: ["Новый - Baru", "Красивый - Indah", "Большой - Besar"],
+        quiz: { q: "Bentuk benar untuk 'buku baru' (книга) adalah...", options: ["новый книга", "новая книга", "новое книга", "новые книга"], answer: 1, explain: "Книга feminin -> новая." }
+      },
+      {
+        title: "Accusative Case untuk Objek Langsung",
+        goal: "Menggunakan bentuk objek langsung dalam kalimat sehari-hari.",
+        image: "https://placehold.co/1200x500/0f172a/ffffff?text=Chapter+10+-+Accusative+Case",
+        caption: "Kasus accusative penting untuk aktivitas harian.",
+        teachingPoints: [
+          "Feminine -а/-я berubah jadi -у/-ю dalam accusative.",
+          "Contoh: читать книгу, пить воду, смотреть карту.",
+          "Latihan kalimat dengan kata kerja transitif."
+        ],
+        nativeLines: [
+          "Я читаю книгу каждый вечер.",
+          "Она пьёт воду."
+        ],
+        dialogue: ["A: Что ты читаешь?","B: Я читаю новую книгу."],
+        grammar: ["Accusative inanimate maskulin sering sama dengan nominative."],
+        vocab: ["Книгу - Buku (objek)", "Воду - Air (objek)", "Кофе - Kopi"],
+        quiz: { q: "Saya minum air = ...", options: ["Я пью вода.", "Я пью воду.", "Я вода пью.", "Я пью вода."], answer: 1, explain: "вода -> воду di accusative." }
+      },
+      {
+        title: "Prepositional Case untuk Lokasi",
+        goal: "Menyebut posisi dan aktivitas di tempat tertentu.",
+        image: "https://placehold.co/1200x500/0369a1/ffffff?text=Chapter+11+-+Prepositional+Case",
+        caption: "Digunakan untuk menjawab 'di mana?'.",
+        teachingPoints: [
+          "Struktur umum: в/на + prepositional.",
+          "Contoh: в школе, в городе, на работе, на станции.",
+          "Latihan dialog lokasi."
+        ],
+        nativeLines: [
+          "Я живу в Джакарте.",
+          "Мы сейчас на работе."
+        ],
+        dialogue: ["A: Где ты сейчас?","B: Я в библиотеке."],
+        grammar: ["Akhiran umum prepositional: -е."],
+        vocab: ["Городе - Di kota", "Школе - Di sekolah", "Работе - Di tempat kerja"],
+        quiz: { q: "Terjemahan 'Saya di rumah' yang paling natural adalah...", options: ["Я в дом.", "Я дома.", "Я дом.", "Я на дом."], answer: 1, explain: "Untuk rumah sering dipakai bentuk adverbial: Я дома." }
+      },
+      {
+        title: "Belanja dan Makanan",
+        goal: "Berinteraksi di toko/kafe dan menyebut kebutuhan dasar.",
+        image: "https://placehold.co/1200x500/92400e/ffffff?text=Chapter+12+-+Shopping+and+Food",
+        caption: "Skill penting untuk survival communication.",
+        teachingPoints: [
+          "Bertanya harga: Сколько стоит?",
+          "Memesan: Я хочу..., Мне, пожалуйста...",
+          "Latih angka + barang + sopan santun."
+        ],
+        nativeLines: [
+          "Мне, пожалуйста, кофе и хлеб.",
+          "Сколько это стоит?"
+        ],
+        dialogue: ["A: Что вы хотите?","B: Я хочу чай и пирог."],
+        grammar: ["Accusative setelah хочу."],
+        vocab: ["Хлеб - Roti", "Молоко - Susu", "Чай - Teh"],
+        quiz: { q: "Kalimat terbaik untuk bertanya harga adalah...", options: ["Где стоит?", "Что стоит?", "Сколько стоит?", "Кто стоит?"], answer: 2, explain: "Pola baku: Сколько стоит?" }
+      },
+      {
+        title: "Arah Jalan dan Transportasi",
+        goal: "Meminta arah dan memahami instruksi lokasi sederhana.",
+        image: "https://placehold.co/1200x500/7f1d1d/ffffff?text=Chapter+13+-+Directions+and+Transport",
+        caption: "Topik praktis saat bepergian di Rusia.",
+        teachingPoints: [
+          "Instruksi inti: прямо, налево, направо.",
+          "Transport dasar: метро, автобус, такси.",
+          "Latih roleplay tanya jalan."
+        ],
+        nativeLines: [
+          "Идите прямо, потом направо.",
+          "Где ближайшее метро?"
+        ],
+        dialogue: ["A: Извините, где метро?","B: Идите прямо и налево."],
+        grammar: ["Imperatif sopan dasar: идите, поверните."],
+        vocab: ["Прямо - Lurus", "Налево - Kiri", "Направо - Kanan"],
+        quiz: { q: "'Belok kiri' dalam bahasa Rusia adalah...", options: ["Направо", "Прямо", "Налево", "Назад"], answer: 2, explain: "Налево = ke kiri." }
+      },
+      {
+        title: "Kesehatan Dasar dan Keadaan Darurat Ringan",
+        goal: "Menyampaikan keluhan sederhana dan meminta bantuan.",
+        image: "https://placehold.co/1200x500/15803d/ffffff?text=Chapter+14+-+Health+Basics",
+        caption: "A1 minimal mampu jelaskan kondisi sederhana.",
+        teachingPoints: [
+          "Ungkapan kondisi: Мне плохо, У меня болит ...",
+          "Minta bantuan: Помогите, пожалуйста.",
+          "Frasa apotek dasar."
+        ],
+        nativeLines: [
+          "У меня болит голова. (Kepala saya sakit.)",
+          "Мне нужен врач. (Saya butuh dokter.)"
+        ],
+        dialogue: ["A: Что случилось?","B: У меня болит горло."],
+        grammar: ["Konstruksi у меня + noun/condition."],
+        vocab: ["Голова - Kepala", "Горло - Tenggorokan", "Врач - Dokter"],
+        quiz: { q: "Terjemahan 'Saya butuh dokter' adalah...", options: ["Я врач.", "Мне нужен врач.", "У меня врач.", "Я нужен врач."], answer: 1, explain: "Pola kebutuhan: Мне нужен..." }
+      },
+      {
+        title: "Review Integratif A1 dan Mini Test",
+        goal: "Menggabungkan semua kompetensi A1 dalam komunikasi utuh.",
+        image: "https://placehold.co/1200x500/312e81/ffffff?text=Chapter+15+-+A1+Final+Review",
+        caption: "Tahap konsolidasi sebelum naik level A2.",
+        teachingPoints: [
+          "Simulasi perkenalan + aktivitas + lokasi + belanja.",
+          "Review kasus nominative, accusative, prepositional.",
+          "Latihan monolog 1 menit dalam bahasa Rusia."
+        ],
+        nativeLines: [
+          "Я изучаю русский язык каждый день.",
+          "Я живу в Джакарте и работаю в офисе."
+        ],
+        dialogue: ["A: Расскажите о себе.","B: Меня зовут Рина. Я из Индонезии. Я учусь и работаю."],
+        grammar: ["Konsolidasi grammar A1 dan perbaikan akurasi."],
+        vocab: ["Изучать - Mempelajari", "Каждый день - Setiap hari", "О себе - Tentang diri sendiri"],
+        quiz: { q: "Mana kalimat paling lengkap dan benar untuk level A1?", options: ["Я из Индонезия.", "Меня зовут Анна, я из Индонезии и живу в Джакарте.", "Я жить Джакарта.", "Я русский язык."], answer: 1, explain: "Kalimat 2 paling tepat dan lengkap secara A1." }
+      }
+    ];
+
+    let currentIndex = 0;
+    let currentPageIndex = 0;
+    let selectedAnswer = null;
+    const progressKey = "a1InteractiveChaptersProgress";
+    const progress = JSON.parse(localStorage.getItem(progressKey) || "{}");
+
+    const chapterMeta = document.getElementById("chapter-meta");
+    const chapterTitle = document.getElementById("chapter-title");
+    const chapterGoal = document.getElementById("chapter-goal");
+    const pageMeta = document.getElementById("page-meta");
+    const chapterImage = document.getElementById("chapter-image");
+    const imageCaption = document.getElementById("image-caption");
+    const teachingPoints = document.getElementById("teaching-points");
+    const nativeLines = document.getElementById("native-lines");
+    const dialogue = document.getElementById("dialogue");
+    const grammarList = document.getElementById("grammar-list");
+    const vocabList = document.getElementById("vocab-list");
+    const quizQuestion = document.getElementById("quiz-question");
+    const quizOptions = document.getElementById("quiz-options");
+    const quizFeedback = document.getElementById("quiz-feedback");
+    const progressBar = document.getElementById("progress-bar");
+    const progressLabel = document.getElementById("progress-label");
+    const quizSection = document.getElementById("quiz-section");
+
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const prevPageBtn = document.getElementById("prev-page-btn");
+    const nextPageBtn = document.getElementById("next-page-btn");
+    const checkAnswerBtn = document.getElementById("check-answer-btn");
+    const markCompleteBtn = document.getElementById("mark-complete-btn");
+
+    function buildPages(chapter, chapterNumber) {
+      return [
+        {
+          title: "Fondasi Konsep",
+          image: `https://placehold.co/1200x500/1d4ed8/ffffff?text=Chapter+${chapterNumber}+Page+1+-+Concept`,
+          caption: `${chapter.title} - memahami konsep inti dan konteks penggunaan.`,
+          teachingPoints: [
+            ...chapter.teachingPoints,
+            `Pemahaman inti: ${chapter.goal}`,
+            "Catat 5 pola kalimat yang paling sering dipakai dalam komunikasi harian."
+          ],
+          nativeLines: chapter.nativeLines,
+          dialogue: chapter.dialogue,
+          grammar: chapter.grammar,
+          vocab: chapter.vocab
+        },
+        {
+          title: "Pola Kalimat Praktis",
+          image: `https://placehold.co/1200x500/0f766e/ffffff?text=Chapter+${chapterNumber}+Page+2+-+Patterns`,
+          caption: "Fokus pada kerangka kalimat yang dipakai penutur asli.",
+          teachingPoints: [
+            "Gunakan pola kalimat pendek dulu, lalu tambahkan keterangan tempat/waktu.",
+            "Latihan transformasi kalimat positif, negatif, dan pertanyaan.",
+            "Latihan shadowing: tirukan intonasi native 3 kali tiap kalimat."
+          ],
+          nativeLines: [
+            ...chapter.nativeLines,
+            "Скажите это медленно, потом быстро. (Ucapkan pelan lalu cepat.)"
+          ],
+          dialogue: chapter.dialogue,
+          grammar: chapter.grammar,
+          vocab: chapter.vocab
+        },
+        {
+          title: "Latihan Konteks Harian",
+          image: `https://placehold.co/1200x500/7c3aed/ffffff?text=Chapter+${chapterNumber}+Page+3+-+Daily+Context`,
+          caption: "Skenario sehari-hari agar materi melekat lebih lama.",
+          teachingPoints: [
+            "Simulasikan 3 konteks: rumah, tempat kerja/sekolah, dan ruang publik.",
+            "Buat 5 kalimat personal tentang rutinitasmu menggunakan topik chapter ini.",
+            "Gunakan kosakata chapter untuk role-play 2 orang selama 2 menit."
+          ],
+          nativeLines: chapter.nativeLines,
+          dialogue: [
+            ...chapter.dialogue,
+            "A: Можно ещё пример? B: Да, конечно."
+          ],
+          grammar: chapter.grammar,
+          vocab: chapter.vocab
+        },
+        {
+          title: "Pendalaman Grammar dan Pengucapan",
+          image: `https://placehold.co/1200x500/be185d/ffffff?text=Chapter+${chapterNumber}+Page+4+-+Deep+Practice`,
+          caption: "Penguatan akurasi grammar dan natural pronunciation.",
+          teachingPoints: [
+            "Identifikasi 3 kesalahan umum pemula lalu perbaiki.",
+            "Drill grammar dengan substitution: ganti subjek, kata kerja, objek.",
+            "Rekam suara sendiri, lalu bandingkan dengan model pengucapan."
+          ],
+          nativeLines: [
+            "Повторение делает речь увереннее. (Pengulangan membuat bicara lebih percaya diri.)",
+            ...chapter.nativeLines
+          ],
+          dialogue: chapter.dialogue,
+          grammar: [
+            ...chapter.grammar,
+            "Perhatikan konsistensi akhir kata saat mengganti subjek atau kasus."
+          ],
+          vocab: chapter.vocab
+        },
+        {
+          title: "Ringkasan dan Persiapan Quiz",
+          image: `https://placehold.co/1200x500/ea580c/ffffff?text=Chapter+${chapterNumber}+Page+5+-+Summary+Quiz`,
+          caption: "Halaman rangkuman sebelum mengerjakan quiz chapter.",
+          teachingPoints: [
+            "Review cepat semua poin chapter ini.",
+            "Ulangi 10 kosakata kunci tanpa melihat catatan.",
+            "Jawab quiz setelah mampu membuat minimal 3 kalimat sendiri."
+          ],
+          nativeLines: chapter.nativeLines,
+          dialogue: chapter.dialogue,
+          grammar: chapter.grammar,
+          vocab: chapter.vocab
+        }
+      ];
+    }
+
+    function renderList(target, items) {
+      target.innerHTML = "";
+      items.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        target.appendChild(li);
+      });
+    }
+
+    function renderChapter() {
+      const c = chapters[currentIndex];
+      const pages = buildPages(c, currentIndex + 1);
+      const page = pages[currentPageIndex];
+      selectedAnswer = null;
+      quizFeedback.textContent = "";
+
+      chapterMeta.textContent = `Chapter ${currentIndex + 1} dari ${chapters.length}`;
+      chapterTitle.textContent = c.title;
+      chapterGoal.textContent = c.goal;
+      pageMeta.textContent = `Halaman ${currentPageIndex + 1} dari 5 - ${page.title}`;
+      chapterImage.src = page.image || c.image;
+      imageCaption.textContent = page.caption || c.caption;
+
+      renderList(teachingPoints, page.teachingPoints);
+      renderList(grammarList, page.grammar);
+      renderList(vocabList, page.vocab);
+
+      nativeLines.innerHTML = "";
+      page.nativeLines.forEach((line) => {
+        const box = document.createElement("div");
+        box.className = "bg-blue-50 border border-blue-200 rounded-lg p-3 text-gray-700";
+        box.textContent = line;
+        nativeLines.appendChild(box);
+      });
+
+      dialogue.innerHTML = "";
+      page.dialogue.forEach((line) => {
+        const p = document.createElement("p");
+        p.textContent = line;
+        dialogue.appendChild(p);
+      });
+
+      quizQuestion.textContent = c.quiz.q;
+      quizOptions.innerHTML = "";
+      c.quiz.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50";
+        btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
+        btn.addEventListener("click", () => {
+          selectedAnswer = idx;
+          quizOptions.querySelectorAll("button").forEach((b) => {
+            b.classList.remove("ring-2", "ring-blue-500");
+          });
+          btn.classList.add("ring-2", "ring-blue-500");
+        });
+        quizOptions.appendChild(btn);
+      });
+
+      prevBtn.disabled = currentIndex === 0;
+      prevBtn.classList.toggle("opacity-50", currentIndex === 0);
+      nextBtn.textContent = currentIndex === chapters.length - 1 ? "Kembali ke Chapter 1" : "Next Chapter";
+      prevPageBtn.disabled = currentPageIndex === 0;
+      prevPageBtn.classList.toggle("opacity-50", currentPageIndex === 0);
+      nextPageBtn.textContent = currentPageIndex === 4 ? "Tetap di Halaman Quiz" : "Next Page";
+      quizSection.classList.toggle("hidden", currentPageIndex !== 4);
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const done = Object.values(progress).filter(Boolean).length;
+      const percent = Math.round((done / chapters.length) * 100);
+      progressBar.style.width = `${percent}%`;
+      progressLabel.textContent = `Selesai: ${done}/${chapters.length} chapter (${percent}%)`;
+    }
+
+    checkAnswerBtn.addEventListener("click", () => {
+      const answer = chapters[currentIndex].quiz.answer;
+      const explain = chapters[currentIndex].quiz.explain;
+      if (selectedAnswer === null) {
+        quizFeedback.textContent = "Pilih jawaban dulu ya.";
+        quizFeedback.className = "text-sm mt-3 text-amber-700";
+        return;
+      }
+      const correct = selectedAnswer === answer;
+      quizFeedback.textContent = correct ? `Benar. ${explain}` : `Belum tepat. ${explain}`;
+      quizFeedback.className = `text-sm mt-3 ${correct ? "text-emerald-700" : "text-red-700"}`;
+    });
+
+    markCompleteBtn.addEventListener("click", () => {
+      progress[`chapter-${currentIndex + 1}`] = true;
+      localStorage.setItem(progressKey, JSON.stringify(progress));
+      updateProgress();
+      quizFeedback.textContent = "Chapter ditandai selesai.";
+      quizFeedback.className = "text-sm mt-3 text-blue-700";
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        currentIndex -= 1;
+        currentPageIndex = 0;
+        renderChapter();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < chapters.length - 1) {
+        currentIndex += 1;
+      } else {
+        currentIndex = 0;
+      }
+      currentPageIndex = 0;
+      renderChapter();
+    });
+
+    prevPageBtn.addEventListener("click", () => {
+      if (currentPageIndex > 0) {
+        currentPageIndex -= 1;
+        renderChapter();
+      }
+    });
+
+    nextPageBtn.addEventListener("click", () => {
+      if (currentPageIndex < 4) {
+        currentPageIndex += 1;
+        renderChapter();
+      }
+    });
+
+    renderChapter();
+  </script>
+</body>
+</html>
