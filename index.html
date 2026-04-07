@@ -241,14 +241,40 @@
 
     .tutor-float-widget {
       position: fixed;
-      right: 0;
-      bottom: 0;
+      right: -18px;
+      bottom: -20px;
       width: min(38vw, 190px);
       height: min(38vh, 240px);
       z-index: 900;
       pointer-events: none;
       animation: tutorFloat 3.8s ease-in-out infinite;
       will-change: transform;
+    }
+
+    .tutor-message {
+      position: fixed;
+      right: 86px;
+      bottom: 92px;
+      z-index: 905;
+      max-width: 320px;
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+      padding: 12px 14px;
+    }
+
+    .tutor-message::after {
+      content: "";
+      position: absolute;
+      right: 14px;
+      bottom: -8px;
+      width: 14px;
+      height: 14px;
+      background: #ffffff;
+      border-right: 1px solid #dbeafe;
+      border-bottom: 1px solid #dbeafe;
+      transform: rotate(45deg);
     }
 
     .tutor-float-image {
@@ -267,19 +293,31 @@
 
     @media (min-width: 768px) {
       .tutor-float-widget {
-        right: 0;
-        bottom: 0;
+        right: -22px;
+        bottom: -24px;
         width: min(24vw, 320px);
         height: min(60vh, 430px);
+      }
+
+      .tutor-message {
+        right: 170px;
+        bottom: 130px;
       }
     }
 
     @media (max-width: 420px) {
       .tutor-float-widget {
-        right: 0;
-        bottom: 0;
+        right: -20px;
+        bottom: -22px;
         width: min(56vw, 250px);
         height: min(56vh, 320px);
+      }
+
+      .tutor-message {
+        right: 62px;
+        bottom: 88px;
+        max-width: calc(100vw - 92px);
+        padding: 10px 12px;
       }
     }
   </style>
@@ -449,6 +487,12 @@
 
   <div class="tutor-float-widget" aria-hidden="true">
     <img src="assets/tutor-removebg.png" alt="Tutor TemanRusiaKamu" class="tutor-float-image">
+  </div>
+  <div id="tutor-message" class="tutor-message">
+    <button id="close-tutor-message" type="button" class="absolute top-1 right-2 text-gray-400 hover:text-gray-600 text-sm" aria-label="Tutup pesan tutor">✕</button>
+    <p class="text-sm text-gray-700 pr-5">
+      halo perkenalkan saya kak James, jika anda memiliki pertanyaan silahkan tulis di chat ini
+    </p>
   </div>
 
   <!-- Tentang Section -->
@@ -744,6 +788,19 @@
           mobileMenu.classList.add('hidden');
         });
       });
+    })();
+
+    (function () {
+      const tutorMessage = document.getElementById('tutor-message');
+      const closeTutorMessage = document.getElementById('close-tutor-message');
+      if (!tutorMessage || !closeTutorMessage) return;
+
+      const hideMessage = () => {
+        tutorMessage.classList.add('hidden');
+      };
+
+      closeTutorMessage.addEventListener('click', hideMessage);
+      setTimeout(hideMessage, 5000);
     })();
 
     (function () {
