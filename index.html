@@ -282,6 +282,7 @@
       right: 78px;
       bottom: 190px;
       z-index: 949;
+      pointer-events: auto;
       border: 1px solid #bfdbfe;
       background: #ffffff;
       color: #1d4ed8;
@@ -364,7 +365,7 @@
       }
     }
 
-    @media (max-width: 420px) {
+    @media (max-width: 768px) {
       .tutor-float-widget {
         right: -30px;
         bottom: -34px;
@@ -373,15 +374,15 @@
       }
 
       .tutor-message {
-        right: 46px;
-        bottom: 228px;
+        right: 22px;
+        bottom: 240px;
         width: min(300px, calc(100vw - 56px));
         padding: 10px;
       }
 
       .tutor-chat-minimized {
-        right: 42px;
-        bottom: 236px;
+        right: 16px;
+        bottom: 248px;
       }
     }
   </style>
@@ -411,7 +412,7 @@
           <li><a href="#home" class="text-gray-700 hover:text-blue-700 transition">Beranda</a></li>
           <li><a href="#tentang" class="text-gray-700 hover:text-blue-700 transition">Tentang</a></li>
           <li><a href="#paket" class="text-gray-700 hover:text-blue-700 transition">Paket Kursus</a></li>
-          <li><a href="russian-a1-module-preview.html" class="text-gray-700 hover:text-blue-700 transition">Materi Belajar</a></li>
+          <li><a href="materi-pembelajaran.html" class="text-gray-700 hover:text-blue-700 transition">Materi Pembelajaran</a></li>
           <li><a href="#testimoni" class="text-gray-700 hover:text-blue-700 transition">Testimoni</a></li>
           <li><a href="#kontak" class="text-gray-700 hover:text-blue-700 transition">Kontak</a></li>
           <li><a id="membership-link" href="login.html" class="text-gray-700 hover:text-blue-700 transition font-semibold">Membership Area</a></li>
@@ -478,7 +479,7 @@
         <li><a href="#home" class="block text-gray-700 hover:text-blue-700">Beranda</a></li>
         <li><a href="#tentang" class="block text-gray-700 hover:text-blue-700">Tentang</a></li>
         <li><a href="#paket" class="block text-gray-700 hover:text-blue-700">Paket Kursus</a></li>
-        <li><a href="russian-a1-module-preview.html" class="block text-gray-700 hover:text-blue-700">Materi Belajar</a></li>
+        <li><a href="materi-pembelajaran.html" class="block text-gray-700 hover:text-blue-700">Materi Pembelajaran</a></li>
         <li><a href="#testimoni" class="block text-gray-700 hover:text-blue-700">Testimoni</a></li>
         <li><a href="#kontak" class="block text-gray-700 hover:text-blue-700">Kontak</a></li>
         <li><a id="mobile-membership-link" href="login.html" class="block text-blue-700 font-semibold hover:text-blue-800">Membership Area</a></li>
@@ -575,7 +576,7 @@
       </div>
     </div>
   </div>
-  <button id="tutor-chat-minimized" type="button" class="tutor-chat-minimized hidden">Buka chat Kak James</button>
+  <button id="tutor-chat-minimized" type="button" class="tutor-chat-minimized hidden">Tanya kak James</button>
 
   <!-- Tentang Section -->
   <section id="tentang" class="py-20 bg-white">
