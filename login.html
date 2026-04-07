@@ -5,75 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | TemanRusiaKamu</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gradient-to-br from-blue-100 to-red-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center text-blue-800 mb-6">Login ke Akun Anda</h2>
-    <form id="login-form" class="space-y-4">
-      <input id="email" type="email" placeholder="Email" required
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
-      <input id="password" type="password" placeholder="Password" required
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
-      <button type="submit" id="login-btn"
-        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
-        Login
-      </button>
-    </form>
-    <p class="text-center text-gray-600 mt-4 text-sm">
-      Belum punya akun?
-      <a href="signup.html" class="text-blue-600 hover:underline">Daftar di sini</a>
-    </p>
-    <p id="message" class="text-center text-sm mt-3"></p>
+<body class="min-h-screen bg-gray-100">
+  <div class="min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+      <h1 class="text-2xl font-bold text-gray-800 mb-2">Login</h1>
+      <p class="text-gray-500 mb-6">Masuk ke akun TemanRusiaKamu</p>
+
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input id="email" type="email" required class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input id="password" type="password" required class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button id="submit-btn" type="submit" class="w-full rounded-xl bg-blue-700 text-white py-3 font-semibold hover:bg-blue-800 transition">
+          Login
+        </button>
+      </form>
+
+      <p id="message" class="mt-4 text-sm"></p>
+      <p class="mt-6 text-sm text-gray-600">
+        Belum punya akun?
+        <a href="signup.html" class="text-blue-700 font-semibold hover:underline">Daftar di sini</a>
+      </p>
+      <p class="mt-2 text-sm text-gray-600">
+        <a href="index.html" class="text-gray-500 hover:underline">Kembali ke beranda</a>
+      </p>
+    </div>
   </div>
 
-  <script>
-    const SUPABASE_URL = 'https://mkflcrvsjamfrfxsprwg.supabase.co'
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rZmxjcnZzamFtZnJmeHNwcndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2NzY5OTAsImV4cCI6MjA3NTI1Mjk5MH0.gX36BiqZV1Hym46ACh0kfWAv6T2Js4gjB8Kj4pqNFaQ'
-    
-    const { createClient } = supabase
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  <script type="module">
+    import { auth } from "./firebase-config.js";
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-    const form = document.getElementById('login-form')
-    const msg = document.getElementById('message')
-    const loginBtn = document.getElementById('login-btn')
+    const form = document.getElementById("login-form");
+    const message = document.getElementById("message");
+    const submitBtn = document.getElementById("submit-btn");
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      
-      const email = document.getElementById('email').value.trim()
-      const password = document.getElementById('password').value
-      
-      loginBtn.disabled = true
-      
-      msg.textContent = '⏳ Memproses login...'
-      msg.className = 'text-center text-blue-600 text-sm mt-3 font-medium'
+    const setMessage = (text, isError = false) => {
+      message.textContent = text;
+      message.className = `mt-4 text-sm ${isError ? "text-red-600" : "text-green-600"}`;
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Memproses...";
+      setMessage("");
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
       try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ 
-          email: email, 
-          password: password 
-        })
-        
-        if (error) throw error
-
-        msg.textContent = '✅ Login berhasil! Mengalihkan...'
-        msg.className = 'text-center text-green-600 text-sm mt-3 font-semibold'
-        
-        // Redirect to main page
+        await signInWithEmailAndPassword(auth, email, password);
+        setMessage("Login berhasil. Mengarahkan ke beranda...");
         setTimeout(() => {
-          window.location.href = 'index.html'
-        }, 1500)
-
-      } catch (error) {
-        console.error('Login error:', error)
-        msg.textContent = '❌ ' + (error.message === 'Invalid login credentials' 
-          ? 'Email atau password salah' 
-          : error.message)
-        msg.className = 'text-center text-red-600 text-sm mt-3'
-        loginBtn.disabled = false
+          window.location.href = "index.html";
+        }, 900);
+      } catch (err) {
+        setMessage(err.message, true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Login";
       }
-    })
+    });
   </script>
 </body>
 </html>
