@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Pendaftar | TemanRusiaKamu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl shadow p-6 mb-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">Data Pendaftar</h1>
+          <p class="text-gray-500">Realtime data dari Firebase Firestore</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="admin-email" class="text-sm text-gray-600"></span>
+          <button id="logout-btn" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-gray-50 border-b">
+            <tr>
+              <th class="text-left text-sm font-semibold text-gray-600 px-4 py-3">Nama</th>
+              <th class="text-left text-sm font-semibold text-gray-600 px-4 py-3">WhatsApp</th>
+              <th class="text-left text-sm font-semibold text-gray-600 px-4 py-3">Email</th>
+              <th class="text-left text-sm font-semibold text-gray-600 px-4 py-3">Tanggal Daftar</th>
+            </tr>
+          </thead>
+          <tbody id="users-body" class="divide-y divide-gray-100"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "./firebase-config.js";
+    import {
+      onAuthStateChanged,
+      signOut,
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import {
+      collection,
+      onSnapshot,
+      orderBy,
+      query,
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const body = document.getElementById("users-body");
+    const logoutBtn = document.getElementById("logout-btn");
+    const adminEmail = document.getElementById("admin-email");
+
+    const formatDate = (ts) => {
+      if (!ts?.toDate) return "-";
+      return ts.toDate().toLocaleString("id-ID");
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      adminEmail.textContent = user.email || "";
+
+      const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snap) => {
+        body.innerHTML = "";
+        if (snap.empty) {
+          body.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Belum ada data pendaftar.</td></tr>';
+          return;
+        }
+
+        snap.forEach((docSnap) => {
+          const data = docSnap.data();
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td class="px-4 py-3 text-sm text-gray-800">${data.name || "-"}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${data.phone || "-"}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${data.email || "-"}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${formatDate(data.createdAt)}</td>
+          `;
+          body.appendChild(row);
+        });
+      });
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>
