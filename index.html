@@ -187,19 +187,34 @@
 
     .hero-tutor-wrapper {
       position: relative;
-      min-height: 560px;
+      min-height: 360px;
     }
 
     .hero-tutor-image {
       position: absolute;
-      right: 0;
+      right: 50%;
       bottom: 0;
-      width: min(96%, 520px);
-      max-height: 600px;
+      transform: translateX(50%);
+      width: min(90%, 340px);
+      max-height: 360px;
       object-fit: contain;
-      object-position: bottom right;
+      object-position: bottom center;
       image-rendering: auto;
       filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.25));
+    }
+
+    @media (min-width: 768px) {
+      .hero-tutor-wrapper {
+        min-height: 560px;
+      }
+
+      .hero-tutor-image {
+        right: 0;
+        transform: none;
+        width: min(96%, 520px);
+        max-height: 600px;
+        object-position: bottom right;
+      }
     }
   </style>
 </head>
@@ -360,7 +375,7 @@
           </div>
         </div>
         
-        <div class="hidden md:block hero-tutor-wrapper">
+        <div class="hero-tutor-wrapper">
           <img
             src="assets/tutor-removebg.png"
             alt="Tutor TemanRusiaKamu"
@@ -654,4 +669,21 @@
     </div>
   </section>
 
-  <!--
+  <!-- Kontak Section -->
+  <section id="kontak" class="py-20 bg-gray-900 text-white">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <h2 class="text-4xl font-bold mb-4">Hubungi Kami</h2>
+      <p class="text-lg text-gray-300 mb-8">Siap mulai belajar bahasa Rusia? Konsultasi gratis sekarang.</p>
+      <a href="https://wa.me/62895410191574" target="_blank" class="inline-block px-8 py-4 bg-green-500 text-white rounded-full font-bold hover:bg-green-600 transition">
+        <i class="fab fa-whatsapp mr-2"></i>Chat WhatsApp
+      </a>
+    </div>
+  </section>
+
+  <footer class="bg-black text-gray-400 py-8">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <p>&copy; 2026 TemanRusiaKamu. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
