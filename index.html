@@ -277,6 +277,21 @@
       transform: rotate(45deg);
     }
 
+    .tutor-chat-minimized {
+      position: fixed;
+      right: 78px;
+      bottom: 190px;
+      z-index: 949;
+      border: 1px solid #bfdbfe;
+      background: #ffffff;
+      color: #1d4ed8;
+      border-radius: 9999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+    }
+
     .tutor-float-image {
       width: 100%;
       height: 100%;
@@ -342,6 +357,11 @@
         right: 186px;
         bottom: 238px;
       }
+
+      .tutor-chat-minimized {
+        right: 172px;
+        bottom: 260px;
+      }
     }
 
     @media (max-width: 420px) {
@@ -353,10 +373,15 @@
       }
 
       .tutor-message {
-        right: 48px;
-        bottom: 188px;
+        right: 46px;
+        bottom: 228px;
         width: min(300px, calc(100vw - 56px));
         padding: 10px;
+      }
+
+      .tutor-chat-minimized {
+        right: 42px;
+        bottom: 236px;
       }
     }
   </style>
@@ -386,6 +411,7 @@
           <li><a href="#home" class="text-gray-700 hover:text-blue-700 transition">Beranda</a></li>
           <li><a href="#tentang" class="text-gray-700 hover:text-blue-700 transition">Tentang</a></li>
           <li><a href="#paket" class="text-gray-700 hover:text-blue-700 transition">Paket Kursus</a></li>
+          <li><a href="russian-a1-module-preview.html" class="text-gray-700 hover:text-blue-700 transition">Materi Belajar</a></li>
           <li><a href="#testimoni" class="text-gray-700 hover:text-blue-700 transition">Testimoni</a></li>
           <li><a href="#kontak" class="text-gray-700 hover:text-blue-700 transition">Kontak</a></li>
           <li><a id="membership-link" href="login.html" class="text-gray-700 hover:text-blue-700 transition font-semibold">Membership Area</a></li>
@@ -452,6 +478,7 @@
         <li><a href="#home" class="block text-gray-700 hover:text-blue-700">Beranda</a></li>
         <li><a href="#tentang" class="block text-gray-700 hover:text-blue-700">Tentang</a></li>
         <li><a href="#paket" class="block text-gray-700 hover:text-blue-700">Paket Kursus</a></li>
+        <li><a href="russian-a1-module-preview.html" class="block text-gray-700 hover:text-blue-700">Materi Belajar</a></li>
         <li><a href="#testimoni" class="block text-gray-700 hover:text-blue-700">Testimoni</a></li>
         <li><a href="#kontak" class="block text-gray-700 hover:text-blue-700">Kontak</a></li>
         <li><a id="mobile-membership-link" href="login.html" class="block text-blue-700 font-semibold hover:text-blue-800">Membership Area</a></li>
@@ -538,6 +565,9 @@
         <button class="faq-chip" type="button" data-faq="harga">Harga kursus</button>
         <button class="faq-chip" type="button" data-faq="jadwal">Jadwal kelas</button>
         <button class="faq-chip" type="button" data-faq="durasi">Durasi pertemuan</button>
+        <button class="faq-chip" type="button" data-faq="private">Les private</button>
+        <button class="faq-chip" type="button" data-faq="ebook">Bonus e-book</button>
+        <button class="faq-chip" type="button" data-faq="native">Tutor native</button>
       </div>
       <div class="mt-2 flex gap-2">
         <input id="tutor-chat-input" type="text" placeholder="Tulis pertanyaan..." class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
@@ -545,6 +575,7 @@
       </div>
     </div>
   </div>
+  <button id="tutor-chat-minimized" type="button" class="tutor-chat-minimized hidden">Buka chat Kak James</button>
 
   <!-- Tentang Section -->
   <section id="tentang" class="py-20 bg-white">
@@ -844,15 +875,16 @@
     (function () {
       const tutorMessage = document.getElementById('tutor-message');
       const closeTutorMessage = document.getElementById('close-tutor-message');
+      const minimizedChat = document.getElementById('tutor-chat-minimized');
       const chatLog = document.getElementById('tutor-chat-log');
       const chatInput = document.getElementById('tutor-chat-input');
       const chatSend = document.getElementById('tutor-chat-send');
-      if (!tutorMessage || !closeTutorMessage || !chatLog || !chatInput || !chatSend) return;
+      if (!tutorMessage || !closeTutorMessage || !minimizedChat || !chatLog || !chatInput || !chatSend) return;
 
       const faqMap = [
         {
           keywords: ['harga', 'biaya', 'price', 'tarif'],
-          answer: 'Untuk saat ini, paket grup Rp750.000/bulan dan biaya pendaftaran Rp250.000 (sekali bayar).'
+          answer: 'Harga kelas grup: pendaftaran Rp250.000 (sekali bayar) + kursus Rp750.000/bulan. Untuk les private: pendaftaran Rp250.000 + kursus Rp1.200.000/bulan.'
         },
         {
           keywords: ['jadwal', 'jam', 'schedule', 'kapan'],
@@ -869,6 +901,26 @@
         {
           keywords: ['ebook', 'materi'],
           answer: 'Setiap pendaftar mendapatkan materi pembelajaran lengkap dan bonus e-book premium.'
+        },
+        {
+          keywords: ['private', 'les private', '1 on 1', 'satu satu'],
+          answer: 'Les private bersifat 1-on-1, lebih intensif, dengan 8x pertemuan per bulan. Biaya kursus private Rp1.200.000/bulan.'
+        },
+        {
+          keywords: ['native', 'tutor', 'pengajar'],
+          answer: 'Kamu akan belajar bersama tutor native speaker berpengalaman, yaitu Kak James.'
+        },
+        {
+          keywords: ['zoom', 'platform', 'kelas online', 'online'],
+          answer: 'Semua kelas dilaksanakan online via Zoom dengan metode interaktif.'
+        },
+        {
+          keywords: ['konsultasi', 'gratis', 'admin'],
+          answer: 'Ada fasilitas konsultasi gratis. Kamu juga bisa klik tombol WhatsApp untuk tanya admin langsung.'
+        },
+        {
+          keywords: ['pertemuan', 'sebulan', 'berapa kali'],
+          answer: 'Jumlah pertemuan adalah 8x per bulan, setiap sesi 45 menit.'
         }
       ];
 
@@ -891,6 +943,12 @@
 
       const hideMessage = () => {
         tutorMessage.classList.add('hidden');
+        minimizedChat.classList.remove('hidden');
+      };
+
+      const showMessage = () => {
+        minimizedChat.classList.add('hidden');
+        tutorMessage.classList.remove('hidden');
       };
 
       const sendQuestion = (question) => {
@@ -904,6 +962,7 @@
 
       addBubble('Halo, saya Kak James. Silakan tanya seputar FAQ ya.', 'bot');
       closeTutorMessage.addEventListener('click', hideMessage);
+      minimizedChat.addEventListener('click', showMessage);
       chatSend.addEventListener('click', () => sendQuestion(chatInput.value));
       chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
@@ -997,7 +1056,7 @@
       if (user) {
         setMembershipDestination("my-courses.html");
       } else {
-        setMembershipDestination("login.html");
+        setMembershipDestination("signup.html");
       }
     });
   </script>
