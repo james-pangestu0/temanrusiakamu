@@ -42,6 +42,55 @@
     .testimonial-card:hover {
       box-shadow: 0 15px 40px rgba(0,0,0,0.15);
     }
+
+    .testimony-slider {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      background: #ffffff;
+    }
+
+    .testimony-track {
+      display: flex;
+      transition: transform 0.7s ease;
+      will-change: transform;
+    }
+
+    .testimony-slide {
+      min-width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    .testimony-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 14px;
+    }
+
+    .testimony-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .testimony-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 9999px;
+      border: none;
+      background: #d1d5db;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .testimony-dot.active {
+      width: 24px;
+      background: #2563eb;
+    }
     
     .whatsapp-float {
       position: fixed;
@@ -639,40 +688,20 @@
         <p class="text-xl text-gray-600">Pengalaman nyata dari siswa-siswa kami</p>
       </div>
       
-      <div class="grid md:grid-cols-2 gap-8">
-        <!-- Testimoni 1 -->
-        <div class="testimonial-card">
-          <div class="flex items-start mb-4">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%234f46e5' cx='50' cy='50' r='50'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='40' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E" alt="Avatar" class="w-16 h-16 rounded-full mr-4">
-            <div class="flex-1">
-              <h4 class="font-bold text-gray-800 text-lg">aryasiuu123</h4>
-              <div class="text-yellow-500 text-sm mb-2">
-                ★★★★★
-              </div>
-            </div>
-            <div class="text-3xl text-red-500">❤️</div>
+      <div class="max-w-4xl mx-auto">
+        <div id="testimony-slider" class="testimony-slider">
+          <div id="testimony-track" class="testimony-track">
+            <div class="testimony-slide"><img src="assets/testimoni-1.png" alt="Testimoni siswa 1" class="testimony-image"></div>
+            <div class="testimony-slide"><img src="assets/testimoni-2.png" alt="Testimoni siswa 2" class="testimony-image"></div>
+            <div class="testimony-slide"><img src="assets/testimoni-3.png" alt="Testimoni siswa 3" class="testimony-image"></div>
+            <div class="testimony-slide"><img src="assets/testimoni-4.png" alt="Testimoni siswa 4" class="testimony-image"></div>
+            <div class="testimony-slide"><img src="assets/testimoni-5.png" alt="Testimoni siswa 5" class="testimony-image"></div>
+            <div class="testimony-slide"><img src="assets/testimoni-6.png" alt="Testimoni siswa 6" class="testimony-image"></div>
+            <div class="testimony-slide"><img src="assets/testimoni-7.png" alt="Testimoni siswa 7" class="testimony-image"></div>
           </div>
-          <p class="text-gray-700 leading-relaxed italic">
-            "Pengalaman belajar bersama kak James seru banget!!! cara ngajar nya sangat informatif dan interaktif dengan para student jadinya ga gampang bosen. Apalagi kak James bisa bikin pelajaran ga terasa repetitif dan monoton. Aku jadi semangat banget belajar bahasa Rusia apalagi kalo ditutorin nya sama mas james lagi🔥🔥"
-          </p>
         </div>
-        
-        <!-- Testimoni 2 -->
-        <div class="testimonial-card">
-          <div class="flex items-start mb-4">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%23dc2626' cx='50' cy='50' r='50'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='40' fill='white' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E" alt="Avatar" class="w-16 h-16 rounded-full mr-4">
-            <div class="flex-1">
-              <h4 class="font-bold text-gray-800 text-lg">ghofar2</h4>
-              <div class="text-yellow-500 text-sm mb-2">
-                ★★★★★
-              </div>
-            </div>
-            <div class="text-3xl text-red-500">❤️</div>
-          </div>
-          <p class="text-gray-700 leading-relaxed italic">
-            "Sama-sama, Kak James. Mantab pokoknya. Kemarin diajarin dari awal banget, sehingga pembelajaran terasa lebih mudah dan mengalir."
-          </p>
-        </div>
+
+        <div id="testimony-dots" class="testimony-dots" aria-label="Navigasi testimoni"></div>
       </div>
       
       <div class="text-center mt-12">
@@ -699,5 +728,57 @@
       <p>&copy; 2026 TemanRusiaKamu. All rights reserved.</p>
     </div>
   </footer>
+  <script>
+    (function () {
+      const track = document.getElementById('testimony-track');
+      const slider = document.getElementById('testimony-slider');
+      const dotsContainer = document.getElementById('testimony-dots');
+      if (!track || !slider || !dotsContainer) return;
+
+      const slides = Array.from(track.children);
+      let index = 0;
+      let timer = null;
+
+      const goTo = (newIndex) => {
+        index = (newIndex + slides.length) % slides.length;
+        track.style.transform = `translateX(-${index * 100}%)`;
+        dotsContainer.querySelectorAll('button').forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      };
+
+      slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = `testimony-dot${i === 0 ? ' active' : ''}`;
+        dot.setAttribute('aria-label', `Lihat testimoni ${i + 1}`);
+        dot.addEventListener('click', () => {
+          goTo(i);
+          restart();
+        });
+        dotsContainer.appendChild(dot);
+      });
+
+      const start = () => {
+        timer = setInterval(() => goTo(index + 1), 4000);
+      };
+
+      const stop = () => {
+        if (timer) clearInterval(timer);
+      };
+
+      const restart = () => {
+        stop();
+        start();
+      };
+
+      slider.addEventListener('mouseenter', stop);
+      slider.addEventListener('mouseleave', start);
+      slider.addEventListener('touchstart', stop, { passive: true });
+      slider.addEventListener('touchend', start, { passive: true });
+
+      goTo(0);
+      start();
+    })();
+  </script>
 </body>
 </html>
