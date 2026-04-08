@@ -47,33 +47,72 @@
       border-radius: 3px;
     }
     body.night-mode {
-      background: #020617;
-      color: #e2e8f0;
+      background: #0f172a;
+      color: #0f172a;
     }
     body.night-mode header {
-      background: rgba(15, 23, 42, 0.95);
-      border-color: #1e293b;
+      background: rgba(241, 245, 249, 0.95);
+      border-color: #cbd5e1;
+    }
+    body.night-mode header h1,
+    body.night-mode header p {
+      color: #0f172a !important;
     }
     body.night-mode .reader-card {
-      background: #0f172a;
-      border-color: #1e293b;
-      color: #e2e8f0;
+      background: #e2e8f0;
+      border-color: #94a3b8;
+      color: #0f172a;
     }
     body.night-mode .reader-muted {
-      color: #94a3b8;
+      color: #334155;
     }
     body.night-mode .reader-btn {
-      border-color: #334155;
-      color: #e2e8f0;
-      background: #1e293b;
+      border-color: #64748b;
+      color: #0f172a;
+      background: #f1f5f9;
     }
     body.night-mode #pdf-container {
-      background: #0b1220;
+      background: #cbd5e1;
     }
     .bookmark-item.active {
       background: #dbeafe;
       color: #1d4ed8;
       border-color: #bfdbfe;
+    }
+    .outline-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      width: 100%;
+    }
+    .outline-arrow-btn {
+      flex-shrink: 0;
+      width: 32px;
+      min-height: 38px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .outline-arrow-btn:hover {
+      background: #e2e8f0;
+    }
+    .outline-title-btn {
+      flex: 1;
+      text-align: left;
+      min-height: 38px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .outline-title-btn:hover {
+      background: #f8fafc;
     }
     .outline-toggle {
       width: 100%;
@@ -107,9 +146,17 @@
       display: block;
     }
     body.night-mode .bookmark-item.active {
-      background: #1e3a8a;
-      color: #dbeafe;
-      border-color: #1d4ed8;
+      background: #bfdbfe;
+      color: #1e3a8a;
+      border-color: #3b82f6;
+    }
+    body.night-mode .outline-toggle {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+    body.night-mode .outline-arrow {
+      color: #475569;
     }
     .pdf-side-nav {
       position: absolute;
@@ -148,6 +195,20 @@
       bottom: 14px;
       width: min(360px, calc(100vw - 28px));
       z-index: 40;
+    }
+    body.night-mode #note-input {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+    body.night-mode #notepad-panel {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+    body.night-mode #page-input {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #64748b;
     }
   </style>
 </head>
@@ -395,7 +456,6 @@
 
     function highlightActiveBookmark(page) {
       if (!outlineList) return;
-      if (currentOutlinePage === page) return;
       currentOutlinePage = page;
       outlineList.querySelectorAll("[data-page]").forEach((el) => {
         const isActive = Number(el.dataset.page) === page;
@@ -414,52 +474,112 @@
       return pageIndex + 1;
     }
 
+    /** Many PDFs return a flat outline (no item.items). Build chapter → subsection tree. */
+    function buildSyntheticOutline(flatItems) {
+      if (!flatItems?.length) return [];
+      const hasNested = flatItems.some((i) => i.items && i.items.length);
+      if (hasNested) return flatItems;
+
+      const roots = [];
+      let current = null;
+      const isMajor = (title) => {
+        const t = (title || "").trim();
+        return /^(Глава|Часть|Раздел|Введение|Приложение|Тест|Итог|Заключение)\b/i.test(t)
+          || /^Урок\s*\d+/i.test(t)
+          || /^Часть\s*[IVX\d]/i.test(t);
+      };
+
+      for (const it of flatItems) {
+        const node = { title: it.title, dest: it.dest, items: it.items };
+        if (isMajor(it.title)) {
+          current = { title: it.title, dest: it.dest, items: [] };
+          roots.push(current);
+        } else if (current) {
+          current.items.push({ title: it.title, dest: it.dest });
+        } else {
+          roots.push({ title: it.title, dest: it.dest, items: [] });
+        }
+      }
+      return roots;
+    }
+
     async function renderOutline() {
       if (!pdfDoc || !outlineList) return;
       outlineList.innerHTML = "";
-      const outline = await pdfDoc.getOutline();
-      if (!outline || outline.length === 0) {
+      const raw = await pdfDoc.getOutline();
+      if (!raw || raw.length === 0) {
         outlineList.innerHTML = `<p class="reader-muted text-sm">Tidak ada bookmarks bawaan PDF.</p>`;
         return;
       }
 
+      const outline = buildSyntheticOutline(raw);
+
       async function appendItems(items, container, level = 0) {
         for (const item of items) {
           const page = await resolveDestToPage(item.dest);
-          const row = document.createElement("div");
           const hasChildren = item.items && item.items.length > 0;
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "bookmark-item outline-toggle text-sm hover:bg-slate-50";
-          btn.style.marginLeft = `${level * 2}px`;
-          const arrow = hasChildren ? '<span class="outline-arrow">▼</span>' : '<span class="outline-arrow"></span>';
-          btn.innerHTML = `${arrow}<span class="flex-1">${page ? `${item.title} (p.${page})` : item.title}</span>`;
+
+          const row = document.createElement("div");
+          row.className = "outline-block";
+          row.style.marginLeft = `${level * 10}px`;
+
+          const rowInner = document.createElement("div");
+          rowInner.className = "outline-row";
+
+          let childWrap = null;
+          let arrowBtn = null;
+
+          if (hasChildren) {
+            childWrap = document.createElement("div");
+            childWrap.className = "outline-children";
+            arrowBtn = document.createElement("button");
+            arrowBtn.type = "button";
+            arrowBtn.className = "outline-arrow-btn";
+            arrowBtn.setAttribute("aria-expanded", "false");
+            arrowBtn.setAttribute("aria-label", "Buka sub-bab");
+            arrowBtn.innerHTML = '<span class="outline-arrow">▼</span>';
+            arrowBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const open = childWrap.classList.toggle("show");
+              arrowBtn.setAttribute("aria-expanded", open ? "true" : "false");
+              const ar = arrowBtn.querySelector(".outline-arrow");
+              if (ar) ar.classList.toggle("expanded", open);
+            });
+          }
+
+          const titleBtn = document.createElement("button");
+          titleBtn.type = "button";
+          titleBtn.className = "bookmark-item outline-title-btn text-sm";
+          titleBtn.textContent = page ? `${item.title} (p.${page})` : item.title;
+
           if (page) {
-            btn.dataset.page = String(page);
-            btn.addEventListener("click", () => {
+            titleBtn.dataset.page = String(page);
+            titleBtn.addEventListener("click", () => {
               pageNum = page;
               queueRenderPage(pageNum);
               if (window.innerWidth < 768) outlinePanel.classList.add("hidden");
             });
           } else {
-            btn.disabled = true;
-            btn.classList.add("opacity-60", "cursor-not-allowed");
+            titleBtn.disabled = true;
+            titleBtn.classList.add("opacity-60", "cursor-not-allowed");
           }
-
-          row.appendChild(btn);
-          container.appendChild(row);
 
           if (hasChildren) {
-            const childWrap = document.createElement("div");
-            childWrap.className = "outline-children";
+            rowInner.appendChild(arrowBtn);
+          } else {
+            const spacer = document.createElement("span");
+            spacer.className = "w-8 flex-shrink-0";
+            rowInner.appendChild(spacer);
+          }
+          rowInner.appendChild(titleBtn);
+          row.appendChild(rowInner);
+
+          if (hasChildren) {
             row.appendChild(childWrap);
-            const arrowEl = btn.querySelector(".outline-arrow");
-            btn.addEventListener("click", () => {
-              childWrap.classList.toggle("show");
-              arrowEl.classList.toggle("expanded");
-            });
             await appendItems(item.items, childWrap, level + 1);
           }
+
+          container.appendChild(row);
         }
       }
 
