@@ -9,10 +9,16 @@
     #pdf-container {
       position: relative;
       background: #f9fafb;
+      text-align: center;
+    }
+    #pdf-page-wrap {
+      position: relative;
+      display: inline-block;
+      margin: 0 auto;
     }
     #pdf-canvas {
       display: block;
-      margin: 0 auto;
+      margin: 0;
       max-width: 100%;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
@@ -69,6 +75,37 @@
       color: #1d4ed8;
       border-color: #bfdbfe;
     }
+    .outline-toggle {
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+    }
+    .outline-arrow {
+      display: inline-block;
+      width: 14px;
+      text-align: center;
+      color: #64748b;
+      transition: transform 0.2s ease;
+    }
+    .outline-arrow.expanded {
+      transform: rotate(180deg);
+    }
+    .outline-children {
+      margin-top: 6px;
+      margin-left: 12px;
+      border-left: 2px dashed #cbd5e1;
+      padding-left: 10px;
+      display: none;
+    }
+    .outline-children.show {
+      display: block;
+    }
     body.night-mode .bookmark-item.active {
       background: #1e3a8a;
       color: #dbeafe;
@@ -105,6 +142,13 @@
         display: none;
       }
     }
+    .notepad {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      width: min(360px, calc(100vw - 28px));
+      z-index: 40;
+    }
   </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
@@ -135,8 +179,10 @@
     <section class="reader-card bg-white rounded-2xl border border-slate-200 shadow p-4 md:p-5">
       <div id="pdf-container" class="rounded-xl overflow-auto">
         <button id="side-prev" class="pdf-side-nav left" type="button" aria-label="Previous page">‹</button>
-        <canvas id="pdf-canvas"></canvas>
-        <div id="text-layer"></div>
+        <div id="pdf-page-wrap">
+          <canvas id="pdf-canvas"></canvas>
+          <div id="text-layer"></div>
+        </div>
         <button id="side-next" class="pdf-side-nav right" type="button" aria-label="Next page">›</button>
       </div>
       <div id="pdf-error" class="hidden mt-3 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm"></div>
@@ -163,6 +209,20 @@
     </div>
   </main>
 
+  <section class="notepad">
+    <div id="notepad-panel" class="bg-white border border-slate-200 rounded-xl shadow-lg">
+      <div class="flex items-center justify-between p-3 border-b border-slate-100">
+        <h3 class="font-semibold text-slate-800 text-sm">Notepad</h3>
+        <div class="flex items-center gap-2">
+          <button id="save-note" class="text-xs px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700">Save</button>
+          <button id="minimize-note" class="text-xs px-2 py-1 rounded border border-slate-300 hover:bg-slate-50">_</button>
+        </div>
+      </div>
+      <textarea id="note-input" rows="8" class="w-full p-3 text-sm text-slate-700 rounded-b-xl focus:outline-none" placeholder="Tulis catatan belajar kamu di sini..."></textarea>
+    </div>
+    <button id="open-note" class="hidden w-full bg-blue-600 text-white py-2 rounded-xl shadow hover:bg-blue-700">Open Notepad</button>
+  </section>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     const pdfjsLib = window["pdfjs-dist/build/pdf"];
@@ -177,6 +237,7 @@
     const canvas = document.getElementById("pdf-canvas");
     const ctx = canvas.getContext("2d");
     const textLayer = document.getElementById("text-layer");
+    const pageWrap = document.getElementById("pdf-page-wrap");
     const pageStatus = document.getElementById("page-status");
     const pdfError = document.getElementById("pdf-error");
     const outlinePanel = document.getElementById("outline-panel");
@@ -194,6 +255,11 @@
     const sidePrevBtn = document.getElementById("side-prev");
     const sideNextBtn = document.getElementById("side-next");
     const pdfContainer = document.getElementById("pdf-container");
+    const notepadPanel = document.getElementById("notepad-panel");
+    const openNoteBtn = document.getElementById("open-note");
+    const minimizeNoteBtn = document.getElementById("minimize-note");
+    const saveNoteBtn = document.getElementById("save-note");
+    const noteInput = document.getElementById("note-input");
 
     let pdfDoc = null;
     let pageNum = 1;
@@ -228,12 +294,15 @@
       canvas.width = viewport.width;
       canvas.style.width = `${viewport.width}px`;
       canvas.style.height = `${viewport.height}px`;
+      pageWrap.style.width = `${viewport.width}px`;
+      pageWrap.style.height = `${viewport.height}px`;
 
       textLayer.innerHTML = "";
+      textLayer.style.position = "absolute";
+      textLayer.style.left = "0px";
+      textLayer.style.top = "0px";
       textLayer.style.width = `${viewport.width}px`;
       textLayer.style.height = `${viewport.height}px`;
-      textLayer.style.left = `${canvas.offsetLeft}px`;
-      textLayer.style.top = `${canvas.offsetTop}px`;
 
       await page.render({ canvasContext: ctx, viewport }).promise;
       const textContent = await page.getTextContent();
@@ -354,14 +423,17 @@
         return;
       }
 
-      async function appendItems(items, level = 0) {
+      async function appendItems(items, container, level = 0) {
         for (const item of items) {
           const page = await resolveDestToPage(item.dest);
+          const row = document.createElement("div");
+          const hasChildren = item.items && item.items.length > 0;
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.className = "bookmark-item w-full text-left text-sm px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50";
-          btn.style.marginLeft = `${level * 10}px`;
-          btn.textContent = page ? `${item.title} (p.${page})` : item.title;
+          btn.className = "bookmark-item outline-toggle text-sm hover:bg-slate-50";
+          btn.style.marginLeft = `${level * 2}px`;
+          const arrow = hasChildren ? '<span class="outline-arrow">▼</span>' : '<span class="outline-arrow"></span>';
+          btn.innerHTML = `${arrow}<span class="flex-1">${page ? `${item.title} (p.${page})` : item.title}</span>`;
           if (page) {
             btn.dataset.page = String(page);
             btn.addEventListener("click", () => {
@@ -373,14 +445,25 @@
             btn.disabled = true;
             btn.classList.add("opacity-60", "cursor-not-allowed");
           }
-          outlineList.appendChild(btn);
-          if (item.items && item.items.length > 0) {
-            await appendItems(item.items, level + 1);
+
+          row.appendChild(btn);
+          container.appendChild(row);
+
+          if (hasChildren) {
+            const childWrap = document.createElement("div");
+            childWrap.className = "outline-children";
+            row.appendChild(childWrap);
+            const arrowEl = btn.querySelector(".outline-arrow");
+            btn.addEventListener("click", () => {
+              childWrap.classList.toggle("show");
+              arrowEl.classList.toggle("expanded");
+            });
+            await appendItems(item.items, childWrap, level + 1);
           }
         }
       }
 
-      await appendItems(outline);
+      await appendItems(outline, outlineList);
     }
 
     function setupSwipeNavigation() {
@@ -412,6 +495,25 @@
     window.addEventListener("resize", () => {
       if (!pdfDoc) return;
       queueRenderPage(pageNum);
+    });
+
+    const NOTE_KEY = "materiPembelajaranNotes";
+    noteInput.value = localStorage.getItem(NOTE_KEY) || "";
+
+    saveNoteBtn.addEventListener("click", () => {
+      localStorage.setItem(NOTE_KEY, noteInput.value);
+      saveNoteBtn.textContent = "Saved";
+      setTimeout(() => { saveNoteBtn.textContent = "Save"; }, 1200);
+    });
+
+    minimizeNoteBtn.addEventListener("click", () => {
+      notepadPanel.classList.add("hidden");
+      openNoteBtn.classList.remove("hidden");
+    });
+
+    openNoteBtn.addEventListener("click", () => {
+      openNoteBtn.classList.add("hidden");
+      notepadPanel.classList.remove("hidden");
     });
 
     async function initPdf() {
