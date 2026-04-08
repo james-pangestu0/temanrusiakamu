@@ -74,6 +74,37 @@
       color: #dbeafe;
       border-color: #1d4ed8;
     }
+    .pdf-side-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      width: 36px;
+      height: 72px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(255, 255, 255, 0.75);
+      color: #1e293b;
+      border-radius: 9999px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      backdrop-filter: blur(4px);
+    }
+    #pdf-container:hover .pdf-side-nav {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .pdf-side-nav.left {
+      left: 10px;
+    }
+    .pdf-side-nav.right {
+      right: 10px;
+    }
+    @media (max-width: 1024px) {
+      .pdf-side-nav {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
@@ -101,7 +132,19 @@
     </aside>
 
     <div class="space-y-4">
+    <section class="reader-card bg-white rounded-2xl border border-slate-200 shadow p-4 md:p-5">
+      <div id="pdf-container" class="rounded-xl overflow-auto">
+        <button id="side-prev" class="pdf-side-nav left" type="button" aria-label="Previous page">‹</button>
+        <canvas id="pdf-canvas"></canvas>
+        <div id="text-layer"></div>
+        <button id="side-next" class="pdf-side-nav right" type="button" aria-label="Next page">›</button>
+      </div>
+      <div id="pdf-error" class="hidden mt-3 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm"></div>
+    </section>
+
     <section class="reader-card bg-white rounded-2xl border border-slate-200 shadow p-4 md:p-5 mb-4">
+      <p id="page-status" class="reader-muted text-sm text-slate-600">Loading PDF...</p>
+      <p class="reader-muted text-xs text-slate-500 mt-1 mb-3">Tip: swipe kiri/kanan di Android untuk pindah halaman.</p>
       <div class="flex flex-wrap items-center gap-2 md:gap-3">
         <button id="prev-page" class="reader-btn px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-50">Previous</button>
         <button id="next-page" class="reader-btn px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-50">Next</button>
@@ -116,16 +159,6 @@
           <button id="zoom-in" class="reader-btn px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-50">+</button>
         </div>
       </div>
-      <p id="page-status" class="reader-muted text-sm text-slate-600 mt-3">Loading PDF...</p>
-      <p class="reader-muted text-xs text-slate-500 mt-1">Tip: swipe kiri/kanan di Android untuk pindah halaman.</p>
-    </section>
-
-    <section class="reader-card bg-white rounded-2xl border border-slate-200 shadow p-4 md:p-5">
-      <div id="pdf-container" class="rounded-xl overflow-auto">
-        <canvas id="pdf-canvas"></canvas>
-        <div id="text-layer"></div>
-      </div>
-      <div id="pdf-error" class="hidden mt-3 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm"></div>
     </section>
     </div>
   </main>
@@ -158,10 +191,14 @@
     const zoomLabel = document.getElementById("zoom-label");
     const pageInput = document.getElementById("page-input");
     const goPageBtn = document.getElementById("go-page");
+    const sidePrevBtn = document.getElementById("side-prev");
+    const sideNextBtn = document.getElementById("side-next");
+    const pdfContainer = document.getElementById("pdf-container");
 
     let pdfDoc = null;
     let pageNum = 1;
     let scale = 1.15;
+    let zoomFactor = 1;
     let isRendering = false;
     let pendingPage = null;
     let currentOutlinePage = null;
@@ -182,7 +219,11 @@
       hideError();
 
       const page = await pdfDoc.getPage(num);
-      const viewport = page.getViewport({ scale });
+      const baseViewport = page.getViewport({ scale: 1 });
+      const isMobile = window.innerWidth <= 768;
+      const fitScale = Math.max(0.6, (pdfContainer.clientWidth - 12) / baseViewport.width);
+      const renderScale = isMobile ? fitScale * zoomFactor : scale;
+      const viewport = page.getViewport({ scale: renderScale });
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       canvas.style.width = `${viewport.width}px`;
@@ -208,7 +249,7 @@
 
       pageStatus.textContent = `Page ${num} of ${pdfDoc.numPages}`;
       pageInput.value = String(num);
-      zoomLabel.textContent = `${Math.round(scale * 100)}%`;
+      zoomLabel.textContent = `${Math.round((isMobile ? renderScale : scale) * 100)}%`;
       highlightActiveBookmark(num);
 
       isRendering = false;
@@ -242,12 +283,20 @@
     nextBtn.addEventListener("click", () => changePage(1));
 
     zoomInBtn.addEventListener("click", () => {
-      scale = Math.min(2.5, scale + 0.1);
+      if (window.innerWidth <= 768) {
+        zoomFactor = Math.min(2.2, zoomFactor + 0.1);
+      } else {
+        scale = Math.min(2.5, scale + 0.1);
+      }
       queueRenderPage(pageNum);
     });
 
     zoomOutBtn.addEventListener("click", () => {
-      scale = Math.max(0.6, scale - 0.1);
+      if (window.innerWidth <= 768) {
+        zoomFactor = Math.max(0.7, zoomFactor - 0.1);
+      } else {
+        scale = Math.max(0.6, scale - 0.1);
+      }
       queueRenderPage(pageNum);
     });
 
@@ -262,6 +311,9 @@
     pageInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") goPageBtn.click();
     });
+
+    sidePrevBtn.addEventListener("click", () => changePage(-1));
+    sideNextBtn.addEventListener("click", () => changePage(1));
 
     toggleNightBtn.addEventListener("click", () => {
       document.body.classList.toggle("night-mode");
@@ -356,6 +408,11 @@
         }
       }, { passive: true });
     }
+
+    window.addEventListener("resize", () => {
+      if (!pdfDoc) return;
+      queueRenderPage(pageNum);
+    });
 
     async function initPdf() {
       try {
