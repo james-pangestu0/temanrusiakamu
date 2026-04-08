@@ -130,11 +130,10 @@
     </div>
   </main>
 
-  <script type="module">
-    import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.5.136/build/pdf.min.mjs";
-    import { renderTextLayer } from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.5.136/web/pdf_viewer.mjs";
-
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.5.136/build/pdf.worker.min.mjs";
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    const pdfjsLib = window["pdfjs-dist/build/pdf"];
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
     // IMPORTANT:
     // Upload the ebook into your repo, for example:
@@ -198,11 +197,14 @@
       await page.render({ canvasContext: ctx, viewport }).promise;
       const textContent = await page.getTextContent();
 
-      renderTextLayer({
-        textContentSource: textContent,
-        container: textLayer,
-        viewport,
-      });
+      if (pdfjsLib.renderTextLayer) {
+        pdfjsLib.renderTextLayer({
+          textContent,
+          container: textLayer,
+          viewport,
+          textDivs: [],
+        });
+      }
 
       pageStatus.textContent = `Page ${num} of ${pdfDoc.numPages}`;
       pageInput.value = String(num);
@@ -357,15 +359,20 @@
 
     async function initPdf() {
       try {
-        const loadingTask = pdfjsLib.getDocument(PDF_URL);
+        const loadingTask = pdfjsLib.getDocument({
+          url: PDF_URL,
+          cMapUrl: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",
+          cMapPacked: true,
+        });
         pdfDoc = await loadingTask.promise;
         await renderOutline();
         setupSwipeNavigation();
         pageStatus.textContent = `Page 1 of ${pdfDoc.numPages}`;
         queueRenderPage(pageNum);
       } catch (err) {
+        console.error("PDF load error:", err);
         showError(
-          "PDF belum ditemukan. Upload file ke `assets/ebooks/doroga-v-rossiyu.pdf` lalu refresh halaman."
+          "PDF gagal dimuat. Cek URL file, izin akses publik file, dan CORS host. Pastikan file bisa dibuka langsung lewat browser."
         );
         pageStatus.textContent = "PDF belum siap.";
       }
